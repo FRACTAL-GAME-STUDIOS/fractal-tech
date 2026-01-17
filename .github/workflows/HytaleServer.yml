@@ -1,0 +1,68 @@
+name: Update HytaleServer
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Download Hytale Downloader (always latest)
+        run: |
+          rm -rf hytale-downloader
+          curl -fsSL -o hytale-downloader.zip "https://downloader.hytale.com/hytale-downloader.zip"
+          unzip -oq hytale-downloader.zip -d hytale-downloader
+          rm -f hytale-downloader.zip
+          chmod +x hytale-downloader/hytale-downloader-linux-amd64
+
+      - name: Recreate credentials file from secret
+        env:
+          HYTALE_CREDENTIALS_B64: ${{ secrets.HYTALE_CREDENTIALS_B64 }}
+        run: |
+          test -n "$HYTALE_CREDENTIALS_B64" || (echo "Missing secret HYTALE_CREDENTIALS_B64" && exit 1)
+          echo "$HYTALE_CREDENTIALS_B64" | base64 -d > .hytale-downloader-credentials.json
+          chmod 600 .hytale-downloader-credentials.json
+
+      - name: Download + extract latest and place jar in libs/
+        run: |
+          rm -rf hytale-api
+          mkdir -p hytale-api libs
+
+          ./hytale-downloader/hytale-downloader-linux-amd64 -download-path ./hytale-api/latest.zip
+
+          unzip -oq ./hytale-api/latest.zip -d ./hytale-api
+          rm -f ./hytale-api/latest.zip
+
+          test -f "./hytale-api/Server/HytaleServer.jar" || (echo "Jar not found: hytale-api/Server/HytaleServer.jar" && exit 1)
+          cp -f ./hytale-api/Server/HytaleServer.jar ./libs/HytaleServer.jar
+
+      - name: Cleanup credentials
+        if: always()
+        run: |
+          rm -f .hytale-downloader-credentials.json
+
+      - name: Commit and push if changed
+        run: |
+          git add libs/HytaleServer.jar
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Update libs/HytaleServer.jar"
+          git push

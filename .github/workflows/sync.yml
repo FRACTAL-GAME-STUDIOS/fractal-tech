@@ -117,9 +117,9 @@ jobs:
 
           if [[ -n "$CHANGED_JAVA" ]]; then
             NAMES="$(echo "$CHANGED_JAVA" | xargs -n1 basename | sed 's/\.java$//' | tr '\n' ',' | sed 's/,$//')"
-            MSG="Actualización de métodos de API: $NAMES"
+            MSG="API method update: $NAMES"
           else
-            MSG="Actualización de métodos de API"
+            MSG="API method update"
           fi
 
           git commit -m "$MSG"

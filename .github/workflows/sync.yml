@@ -60,6 +60,14 @@ jobs:
           rsync -a --delete --checksum "$TMP_DIR/$SRC_PATH" "$STAGE_DIR/$DEST_PATH"
           echo "${{ needs.check_upstream.outputs.latest_sha }}" > "$STAGE_DIR/$SHA_FILE"
 
+          find "$STAGE_DIR/$DEST_PATH" -type f -name '*.java' -print0 | xargs -0 -I{} bash -c '
+            f="$1"
+            first="$(head -n 1 "$f" || true)"
+            if [[ "$first" == "package org.hytaledevlib.lib;" ]]; then
+              sed -i "1s/^package org\.hytaledevlib\.lib;$/package com.fractalgs.api;/" "$f"
+            fi
+          ' _ {}
+
           rm -rf "$TMP_DIR"
 
       - uses: actions/upload-artifact@v4

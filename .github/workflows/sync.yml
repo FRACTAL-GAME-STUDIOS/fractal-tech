@@ -1,4 +1,4 @@
-name: Sync subasset
+name: Sync subset
 
 on:
   workflow_dispatch:
@@ -26,14 +26,14 @@ jobs:
           PREV_SHA=""
           if [[ -f "$SHA_FILE" ]]; then PREV_SHA="$(cat "$SHA_FILE")"; fi
 
+          echo "latest_sha=$LATEST_SHA" >> "$GITHUB_OUTPUT"
+          echo "default_branch=$DEFAULT_BRANCH" >> "$GITHUB_OUTPUT"
+
           if [[ "$LATEST_SHA" == "$PREV_SHA" ]]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
-
-          echo "latest_sha=$LATEST_SHA" >> "$GITHUB_OUTPUT"
-          echo "default_branch=$DEFAULT_BRANCH" >> "$GITHUB_OUTPUT"
 
   prepare_sync:
     runs-on: ubuntu-latest
@@ -57,7 +57,7 @@ jobs:
           git clone --depth 1 --branch "$DEFAULT_BRANCH" "$UPSTREAM_REPO" "$TMP_DIR"
 
           mkdir -p "$STAGE_DIR/$DEST_PATH" "$(dirname "$STAGE_DIR/$SHA_FILE")"
-          rsync -av --delete "$TMP_DIR/$SRC_PATH" "$STAGE_DIR/$DEST_PATH"
+          rsync -a --delete --checksum "$TMP_DIR/$SRC_PATH" "$STAGE_DIR/$DEST_PATH"
           echo "${{ needs.check_upstream.outputs.latest_sha }}" > "$STAGE_DIR/$SHA_FILE"
 
           rm -rf "$TMP_DIR"
@@ -92,18 +92,27 @@ jobs:
           SHA_FILE=".github/upstream.sha"
 
           mkdir -p "$DEST_PATH" "$(dirname "$SHA_FILE")"
-          rsync -av --delete "/tmp/sync-stage/$DEST_PATH" "$DEST_PATH"
+          rsync -a --delete --checksum "/tmp/sync-stage/$DEST_PATH" "$DEST_PATH"
           cp "/tmp/sync-stage/$SHA_FILE" "$SHA_FILE"
-
           rm -rf /tmp/sync-stage
 
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name  "Fractal Game Studios"
+          git config user.email "FractalGameStudios@users.noreply.github.com"
 
           git add "$DEST_PATH" "$SHA_FILE"
+
           if git diff --cached --quiet; then
             exit 0
           fi
 
-          git commit -m "sync: update"
+          CHANGED_JAVA="$(git diff --cached --name-only --diff-filter=ACMR | grep -E '^src/main/java/com/fractalgs/api/.*\.java$' | head -n 12 || true)"
+
+          if [[ -n "$CHANGED_JAVA" ]]; then
+            NAMES="$(echo "$CHANGED_JAVA" | xargs -n1 basename | sed 's/\.java$//' | tr '\n' ',' | sed 's/,$//')"
+            MSG="Actualización de métodos de API: $NAMES"
+          else
+            MSG="Actualización de métodos de API"
+          fi
+
+          git commit -m "$MSG"
           git push

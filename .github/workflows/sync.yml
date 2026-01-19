@@ -12,27 +12,43 @@ jobs:
       changed: ${{ steps.check.outputs.changed }}
       latest_sha: ${{ steps.check.outputs.latest_sha }}
       default_branch: ${{ steps.check.outputs.default_branch }}
+      wiki_changed: ${{ steps.check.outputs.wiki_changed }}
+      wiki_latest_sha: ${{ steps.check.outputs.wiki_latest_sha }}
     steps:
       - id: check
         shell: bash
         run: |
           set -euo pipefail
           UPSTREAM_REPO="https://github.com/ShaneeexD/HytaleDevLib.git"
+          UPSTREAM_WIKI_REPO="https://github.com/ShaneeexD/HytaleDevLib.wiki.git"
           SHA_FILE=".github/upstream.sha"
+          WIKI_SHA_FILE=".github/upstream-wiki.sha"
 
           DEFAULT_BRANCH="$(git ls-remote --symref "$UPSTREAM_REPO" HEAD | awk '/^ref:/ {print $2}' | sed 's@refs/heads/@@')"
           LATEST_SHA="$(git ls-remote "$UPSTREAM_REPO" "refs/heads/$DEFAULT_BRANCH" | awk '{print $1}')"
 
+          WIKI_LATEST_SHA="$(git ls-remote "$UPSTREAM_WIKI_REPO" HEAD | awk '{print $1}' | head -n 1)"
+
           PREV_SHA=""
           if [[ -f "$SHA_FILE" ]]; then PREV_SHA="$(cat "$SHA_FILE")"; fi
 
+          PREV_WIKI_SHA=""
+          if [[ -f "$WIKI_SHA_FILE" ]]; then PREV_WIKI_SHA="$(cat "$WIKI_SHA_FILE")"; fi
+
           echo "latest_sha=$LATEST_SHA" >> "$GITHUB_OUTPUT"
           echo "default_branch=$DEFAULT_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "wiki_latest_sha=$WIKI_LATEST_SHA" >> "$GITHUB_OUTPUT"
 
           if [[ "$LATEST_SHA" == "$PREV_SHA" ]]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [[ -n "$WIKI_LATEST_SHA" && "$WIKI_LATEST_SHA" != "$PREV_WIKI_SHA" ]]; then
+            echo "wiki_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "wiki_changed=false" >> "$GITHUB_OUTPUT"
           fi
 
   prepare_sync:
@@ -48,7 +64,7 @@ jobs:
           UPSTREAM_REPO="https://github.com/ShaneeexD/HytaleDevLib.git"
           DEFAULT_BRANCH="${{ needs.check_upstream.outputs.default_branch }}"
           SRC_PATH="src/main/java/org/hytaledevlib/lib/"
-          DEST_PATH="src/main/java/com/fractalgs/api/"
+          DEST_PATH="src/main/java/com/fractalgs/utils/api/"
           SHA_FILE=".github/upstream.sha"
           TMP_DIR="/tmp/upstream-src"
           STAGE_DIR="/tmp/sync-stage"
@@ -64,7 +80,7 @@ jobs:
             f="$1"
             first="$(head -n 1 "$f" || true)"
             if [[ "$first" == "package org.hytaledevlib.lib;" ]]; then
-              sed -i "1s/^package org\.hytaledevlib\.lib;$/package com.fractalgs.api;/" "$f"
+              sed -i "1s/^package org\.hytaledevlib\.lib;$/package com.fractalgs.utils.api;/" "$f"
             fi
           ' _ {}
 
@@ -74,7 +90,7 @@ jobs:
         with:
           name: sync-payload
           path: |
-            /tmp/sync-stage/src/main/java/com/fractalgs/api
+            /tmp/sync-stage/src/main/java/com/fractalgs/utils/api
             /tmp/sync-stage/.github/upstream.sha
 
   commit_and_push:
@@ -96,7 +112,7 @@ jobs:
       - shell: bash
         run: |
           set -euo pipefail
-          DEST_PATH="src/main/java/com/fractalgs/api/"
+          DEST_PATH="src/main/java/com/fractalgs/utils/api/"
           SHA_FILE=".github/upstream.sha"
 
           mkdir -p "$DEST_PATH" "$(dirname "$SHA_FILE")"
@@ -108,13 +124,11 @@ jobs:
           git config user.email "FractalGameStudios@users.noreply.github.com"
 
           git add "$DEST_PATH" "$SHA_FILE"
-
           if git diff --cached --quiet; then
             exit 0
           fi
 
-          CHANGED_JAVA="$(git diff --cached --name-only --diff-filter=ACMR | grep -E '^src/main/java/com/fractalgs/api/.*\.java$' | head -n 12 || true)"
-
+          CHANGED_JAVA="$(git diff --cached --name-only --diff-filter=ACMR | grep -E '^src/main/java/com/fractalgs/utils/api/.*\.java$' | head -n 12 || true)"
           if [[ -n "$CHANGED_JAVA" ]]; then
             NAMES="$(echo "$CHANGED_JAVA" | xargs -n1 basename | sed 's/\.java$//' | tr '\n' ',' | sed 's/,$//')"
             MSG="API method update: $NAMES"
@@ -123,4 +137,85 @@ jobs:
           fi
 
           git commit -m "$MSG"
+          git push
+
+  prepare_wiki:
+    runs-on: ubuntu-latest
+    needs: check_upstream
+    if: needs.check_upstream.outputs.wiki_changed == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - shell: bash
+        run: |
+          set -euo pipefail
+          UPSTREAM_WIKI_REPO="https://github.com/ShaneeexD/HytaleDevLib.wiki.git"
+          DEST_WIKI_PATH="docs/wiki/"
+          WIKI_SHA_FILE=".github/upstream-wiki.sha"
+          TMP_WIKI="/tmp/upstream-wiki"
+          STAGE_WIKI="/tmp/wiki-stage"
+          REPLACE_TO="HytaleBoilerplate"
+
+          rm -rf "$TMP_WIKI" "$STAGE_WIKI"
+          git clone --depth 1 "$UPSTREAM_WIKI_REPO" "$TMP_WIKI"
+
+          mkdir -p "$STAGE_WIKI/$DEST_WIKI_PATH" "$(dirname "$STAGE_WIKI/$WIKI_SHA_FILE")"
+          rsync -a --delete --checksum "$TMP_WIKI/" "$STAGE_WIKI/$DEST_WIKI_PATH"
+
+          while IFS= read -r -d '' f; do
+            sed -i -E \
+              -e "s/\\<HytaleDevLib\\>/${REPLACE_TO}/g" \
+              -e "/github\\.com\\/ShaneeexD\\/HytaleDevLib/d" \
+              -e "s/\\<ShaneeexD\\>//g" \
+              "$f"
+            sed -i -E -e 's/[[:space:]]{2,}/ /g' "$f"
+          done < <(find "$STAGE_WIKI/$DEST_WIKI_PATH" -type f \( -name '*.md' -o -name '*.markdown' \) -print0)
+
+          echo "${{ needs.check_upstream.outputs.wiki_latest_sha }}" > "$STAGE_WIKI/$WIKI_SHA_FILE"
+
+          rm -rf "$TMP_WIKI"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wiki-payload
+          path: |
+            /tmp/wiki-stage/docs/wiki
+            /tmp/wiki-stage/.github/upstream-wiki.sha
+
+  commit_wiki:
+    runs-on: ubuntu-latest
+    needs: [check_upstream, prepare_wiki]
+    if: needs.check_upstream.outputs.wiki_changed == 'true'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: wiki-payload
+          path: /tmp/wiki-stage
+
+      - shell: bash
+        run: |
+          set -euo pipefail
+          DEST_WIKI_PATH="docs/wiki/"
+          WIKI_SHA_FILE=".github/upstream-wiki.sha"
+
+          mkdir -p "$DEST_WIKI_PATH" "$(dirname "$WIKI_SHA_FILE")"
+          rsync -a --delete --checksum "/tmp/wiki-stage/$DEST_WIKI_PATH" "$DEST_WIKI_PATH"
+          cp "/tmp/wiki-stage/$WIKI_SHA_FILE" "$WIKI_SHA_FILE"
+          rm -rf /tmp/wiki-stage
+
+          git config user.name  "Fractal Game Studios"
+          git config user.email "FractalGameStudios@users.noreply.github.com"
+
+          git add "$DEST_WIKI_PATH" "$WIKI_SHA_FILE"
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+
+          git commit -m "Docs update"
           git push

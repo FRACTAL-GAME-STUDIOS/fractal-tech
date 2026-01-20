@@ -21,15 +21,29 @@ Simplified event registration for common game events. Handles the boilerplate of
 
 Detects when a player drops an item from their inventory.
 
-**Callback Parameters:**
+**Callback Parameters (Basic):**
 - `String itemId` - The item ID that was dropped
 - `int quantity` - The actual quantity dropped (not the full stack size)
 
-**Example:**
+**Callback Parameters (With Player Entity):**
+- `String itemId` - The item ID that was dropped
+- `int quantity` - The actual quantity dropped
+- `Entity playerEntity` - The player who dropped the item
+
+**Example (Basic):**
 ```java
 EventHelper.onItemDrop(this, (itemId, quantity) -> {
  getLogger().at(Level.INFO).log("Item dropped: " + itemId + " x" + quantity);
- // Example: Track dropped items, spawn custom effects, etc.
+});
+```
+
+**Example (With Player Entity):**
+```java
+EventHelper.onItemDrop(this, (itemId, quantity, playerEntity) -> {
+ String playerName = EntityHelper.getName(playerEntity);
+ getLogger().at(Level.INFO).log(playerName + " dropped: " + quantity + "x " + itemId);
+ // Example: Apply stat changes, check permissions, track player-specific stats
+ StatsHelper.addStat(playerEntity, "Stamina", -1.0f);
 });
 ```
 
@@ -37,15 +51,31 @@ EventHelper.onItemDrop(this, (itemId, quantity) -> {
 
 Detects when a player picks up an item.
 
-**Callback Parameters:**
+**Callback Parameters (Basic):**
 - `String itemId` - The item ID that was picked up
 - `int quantity` - The quantity picked up
 
-**Example:**
+**Callback Parameters (With Player Entity):**
+- `String itemId` - The item ID that was picked up
+- `int quantity` - The quantity picked up
+- `Entity playerEntity` - The player who picked up the item
+
+**Example (Basic):**
 ```java
 EventHelper.onItemPickup(this, (itemId, quantity) -> {
  getLogger().at(Level.INFO).log("Player picked up: " + itemId + " x" + quantity);
- // Example: Award achievements, track collection progress
+});
+```
+
+**Example (With Player Entity):**
+```java
+EventHelper.onItemPickup(this, (itemId, quantity, playerEntity) -> {
+ String playerName = EntityHelper.getName(playerEntity);
+ getLogger().at(Level.INFO).log(playerName + " picked up: " + quantity + "x " + itemId);
+ // Example: Reward player, grant XP, check inventory permissions
+ if (itemId.contains("Ingredient_")) {
+ StatsHelper.addStat(playerEntity, "Mana", 5.0f);
+ }
 });
 ```
 
@@ -144,9 +174,14 @@ EventHelper.onPlayerDisconnectByName(this, (username) -> {
 
 Detects when a player crafts an item.
 
-**Callback Parameters:**
+**Callback Parameters (Basic):**
 - `String outputItemId` - The crafted item ID (e.g., "Bench_Campfire", "Weapon_Arrow_Crude")
 - `int quantity` - The quantity crafted
+
+**Callback Parameters (With Player Entity):**
+- `String outputItemId` - The crafted item ID
+- `int quantity` - The quantity crafted
+- `Entity playerEntity` - The player who crafted the item
 
 **How it works:**
 - Detects crafting through `LivingEntityInventoryChangeEvent` transaction patterns
@@ -154,21 +189,28 @@ Detects when a player crafts an item.
 - Crafting creates two transactions: materials removed, then crafted item added
 - Only the crafted item (output) is reported, not the materials consumed
 
-**Example:**
+**Example (Basic):**
 ```java
 EventHelper.onCraftRecipe(this, (outputItemId, quantity) -> {
  getLogger().at(Level.INFO).log("Player crafted: " + quantity + "x " + outputItemId);
+});
+```
+
+**Example (With Player Entity):**
+```java
+EventHelper.onCraftRecipe(this, (outputItemId, quantity, playerEntity) -> {
+ String playerName = EntityHelper.getName(playerEntity);
+ getLogger().at(Level.INFO).log(playerName + " crafted: " + quantity + "x " + outputItemId);
  
- // Example: Track crafting statistics
+ // Example: Grant XP for crafting
  if (outputItemId.contains("Weapon_")) {
- // Player crafted a weapon
- incrementWeaponsCrafted();
+ StatsHelper.addStat(playerEntity, "Mana", 10.0f);
  }
  
- // Example: Give bonus items for specific crafts
+ // Example: Check player permissions before allowing craft
  if ("Bench_Campfire".equals(outputItemId)) {
- // Give extra torches when crafting campfire
- InventoryHelper.giveItem(player, "Furniture_Crude_Torch", 4);
+ // Give bonus items to specific players
+ InventoryHelper.giveItem(playerEntity, "Furniture_Crude_Torch", 4);
  }
 });
 ```
@@ -199,16 +241,19 @@ protected void setup() {
  getLogger().at(Level.INFO).log("[Chat] " + username + ": " + message);
  });
  
- EventHelper.onItemDrop(this, (itemId, quantity) -> {
- getLogger().at(Level.INFO).log("[Drop] " + quantity + "x " + itemId);
+ EventHelper.onItemDrop(this, (itemId, quantity, playerEntity) -> {
+ String playerName = EntityHelper.getName(playerEntity);
+ getLogger().at(Level.INFO).log("[Drop] " + playerName + " dropped " + quantity + "x " + itemId);
  });
  
- EventHelper.onItemPickup(this, (itemId, quantity) -> {
- getLogger().at(Level.INFO).log("[Pickup] " + quantity + "x " + itemId);
+ EventHelper.onItemPickup(this, (itemId, quantity, playerEntity) -> {
+ String playerName = EntityHelper.getName(playerEntity);
+ getLogger().at(Level.INFO).log("[Pickup] " + playerName + " picked up " + quantity + "x " + itemId);
  });
  
- EventHelper.onCraftRecipe(this, (outputItemId, quantity) -> {
- getLogger().at(Level.INFO).log("[Craft] " + quantity + "x " + outputItemId);
+ EventHelper.onCraftRecipe(this, (outputItemId, quantity, playerEntity) -> {
+ String playerName = EntityHelper.getName(playerEntity);
+ getLogger().at(Level.INFO).log("[Craft] " + playerName + " crafted " + quantity + "x " + outputItemId);
  });
  
  EventHelper.onPlayerDisconnect(this, (uuid, username) -> {

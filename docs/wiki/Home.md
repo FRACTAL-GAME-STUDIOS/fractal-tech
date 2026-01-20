@@ -5,9 +5,10 @@ A utility library that simplifies common Hytale modding tasks by providing teste
 ## Helper Classes
 
 ### Core Helpers
-- [EventHelper](EventHelper) - Simple global event registration (chat, items, player join/disconnect)
-- [EcsEventHelper](EcsEventHelper) - ECS-based events (block breaking, placing, zone discovery)
+- [EventHelper](EventHelper) - Simple global event registration (chat, items with player entity, player join/disconnect)
+- [EcsEventHelper](EcsEventHelper) - ECS-based events (block breaking, placing, damage with player entity, zone discovery)
 - [DeathHelper](DeathHelper) - Entity death tracking with killer info, damage source, and death position
+- [StatsHelper](StatsHelper) - Entity stats management (health, stamina, mana), modifiers, buffs/debuffs
 - [WorldHelper](WorldHelper) - World operations, tick tracking, time/day system
 - [EntityHelper](EntityHelper) - Entity queries, teleportation, NPC spawning
 - [ZoneHelper](ZoneHelper) - Zone discovery tracking, current zone queries, player-in-zone searches
@@ -36,8 +37,9 @@ A utility library that simplifies common Hytale modding tasks by providing teste
 
 This project provides a comprehensive utility library for Hytale modding with helpers for:
 
-- **Event handling** - Item drops, pickups, player joins, chat, disconnects, block breaking/placing/interaction
+- **Event handling** - Item drops/pickups/crafting with player entity access, player joins, chat, disconnects, block breaking/placing/damage with player entity
 - **Death tracking** - Entity death detection with killer info, damage source, death position, automatic name resolution
+- **Stats management** - Get/set entity stats (health, stamina, mana), additive/multiplicative modifiers, buffs/debuffs
 - **Entity management** - Teleportation, proximity searches, player homes, entity iteration, NPC spawning
 - **World operations** - Tick tracking, messaging, logging, time/day system
 - **Zone tracking** - Zone discovery tracking, current zone queries, player-in-zone searches
@@ -55,9 +57,12 @@ This project provides a comprehensive utility library for Hytale modding with he
 ## Quick Start
 
 ```java
-// Example: Detect item drops
-EventHelper.onItemDrop(plugin, (itemId, quantity) -> {
- WorldHelper.log(world, "Dropped: " + itemId + " x" + quantity);
+// Example: Detect item drops with player entity
+EventHelper.onItemDrop(plugin, (itemId, quantity, playerEntity) -> {
+ String playerName = EntityHelper.getName(playerEntity);
+ WorldHelper.log(world, playerName + " dropped: " + itemId + " x" + quantity);
+ // Apply stamina cost for dropping items
+ StatsHelper.addStat(playerEntity, "Stamina", -1.0f);
 });
 
 // Example: Teleport all cows to a location

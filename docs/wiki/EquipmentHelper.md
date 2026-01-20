@@ -4,8 +4,6 @@ Track equipment changes (armor, utility/offhand, and tools) for any `LivingEntit
 
 This helper listens to a living entity’s inventory containers (armor/utility/tools) and fires a callback whenever equipment is equipped, unequipped, or replaced.
 
-## NOTE: Cancelling equipping items is implemented for next version, but not currently in v0.3.0
-
 ## Features
 
 - Detect armor changes (Head/Chest/Hands/Legs)

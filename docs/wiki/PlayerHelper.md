@@ -230,8 +230,8 @@ EventHelper.onPlayerChat(plugin, (username, message) -> {
  
  // Check if player is in correct game mode
  GameMode mode = PlayerHelper.getGameMode(player);
- if (mode != GameMode.SURVIVAL) {
- PlayerHelper.sendMessage(player, "Quests only work in Survival mode!");
+ if (mode != GameMode.ADVENTURE) {
+ PlayerHelper.sendMessage(player, "Quests only work in adventure mode!");
  return;
  }
  

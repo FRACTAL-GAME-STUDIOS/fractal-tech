@@ -29,16 +29,22 @@ EcsEventHelper provides simplified access to ECS-based events in Hytale. These e
 
 Detects when a player breaks a block.
 
-**Callback Parameters:**
+**Callback Parameters (Basic):**
 - `Vector3i position` - The exact position of the broken block
 - `String blockTypeId` - The block type ID (e.g., "Soil_Dirt", "Rock_Stone")
+
+**Callback Parameters (With Player Entity):**
+- `Vector3i position` - The exact position of the broken block
+- `String blockTypeId` - The block type ID (e.g., "Soil_Dirt", "Rock_Stone")
+- `Entity playerEntity` - The player entity who broke the block
 
 **Features:**
 - Automatically filters out "Empty" blocks (prevents false positives during block placement)
 - Provides block type ID for identifying what was broken
 - Fires for all block breaking actions
+- Optional player entity parameter for accessing player-specific data
 
-**Example:**
+**Example (Basic):**
 ```java
 EcsEventHelper.onBlockBreak(world, (position, blockTypeId) -> {
  getLogger().at(Level.INFO).log("Block broken: " + blockTypeId + " at " + position);
@@ -51,20 +57,45 @@ EcsEventHelper.onBlockBreak(world, (position, blockTypeId) -> {
 });
 ```
 
+**Example (With Player Entity):**
+```java
+EcsEventHelper.onBlockBreak(world, (position, blockTypeId, playerEntity) -> {
+ if (playerEntity != null) {
+ String playerName = playerEntity.getLegacyDisplayName();
+ getLogger().at(Level.INFO).log(playerName + " broke " + blockTypeId + " at " + position);
+ 
+ // Example: Drain stamina when breaking blocks
+ StatsHelper.addStat(playerEntity, "Stamina", -2.0f);
+ 
+ // Example: Check player permissions
+ if (!hasPermission(playerEntity, "build.break")) {
+ // Restore the block
+ BlockHelper.setBlockByName(world, position, blockTypeId);
+ }
+ }
+});
+```
+
 ### onBlockPlace(world, callback)
 
 Detects when a player places a block.
 
-**Callback Parameters:**
+**Callback Parameters (Basic):**
 - `Vector3i position` - The exact position where the block was placed
 - `String itemId` - The item ID being placed from the player's hand
+
+**Callback Parameters (With Player Entity):**
+- `Vector3i position` - The exact position where the block was placed
+- `String itemId` - The item ID being placed from the player's hand
+- `Entity playerEntity` - The player entity who placed the block
 
 **Features:**
 - Provides the item ID being placed
 - Provides exact block position
 - Fires for all block placements
+- Optional player entity parameter for accessing player-specific data
 
-**Example:**
+**Example (Basic):**
 ```java
 EcsEventHelper.onBlockPlace(world, (position, itemId) -> {
  getLogger().at(Level.INFO).log("Block placed: " + itemId + " at " + position);
@@ -74,24 +105,53 @@ EcsEventHelper.onBlockPlace(world, (position, itemId) -> {
 });
 ```
 
+**Example (With Player Entity):**
+```java
+EcsEventHelper.onBlockPlace(world, (position, itemId, playerEntity) -> {
+ if (playerEntity != null) {
+ String playerName = playerEntity.getLegacyDisplayName();
+ getLogger().at(Level.INFO).log(playerName + " placed " + itemId + " at " + position);
+ 
+ // Example: Reward player for building
+ if (itemId.contains("Wood")) {
+ StatsHelper.addStat(playerEntity, "Mana", 1.0f);
+ }
+ 
+ // Example: Check build permissions
+ if (!canBuildHere(playerEntity, position)) {
+ BlockHelper.setBlock(world, position, 0); // Remove the block
+ }
+ }
+});
+```
+
 ### onBlockDamage(world, callback)
 
 Detects when a player damages a block (mining progress tracking).
 
-**Callback Parameters:**
+**Callback Parameters (Basic):**
 - `Vector3i position` - The exact position of the block being damaged
 - `String blockTypeId` - The block type ID (e.g., "Rock_Stone")
 - `float currentDamage` - The current accumulated damage on the block (0.0 to 1.0+)
 - `float damage` - The amount of damage being applied this tick
 - `String itemInHand` - The item ID in the player's hand (null if empty/hand)
 
+**Callback Parameters (With Player Entity):**
+- `Vector3i position` - The exact position of the block being damaged
+- `String blockTypeId` - The block type ID (e.g., "Rock_Stone")
+- `float currentDamage` - The current accumulated damage on the block (0.0 to 1.0+)
+- `float damage` - The amount of damage being applied this tick
+- `String itemInHand` - The item ID in the player's hand (null if empty/hand)
+- `Entity playerEntity` - The player entity damaging the block
+
 **Features:**
 - Fires continuously while a player is mining/damaging a block
 - Provides real-time mining progress information
 - Shows what tool is being used
 - Tracks damage accumulation
+- Optional player entity parameter for accessing player-specific data
 
-**Example:**
+**Example (Basic):**
 ```java
 EcsEventHelper.onBlockDamage(world, (position, blockTypeId, currentDamage, damage, itemInHand) -> {
  String tool = itemInHand != null ? itemInHand : "Hand";
@@ -108,6 +168,34 @@ EcsEventHelper.onBlockDamage(world, (position, blockTypeId, currentDamage, damag
  // Example: Track mining speed with different tools
  if ("Pickaxe_Diamond".equals(itemInHand)) {
  // Player is using diamond pickaxe - fast mining!
+ }
+});
+```
+
+**Example (With Player Entity):**
+```java
+EcsEventHelper.onBlockDamage(world, (position, blockTypeId, currentDamage, damage, itemInHand, playerEntity) -> {
+ if (playerEntity != null) {
+ String playerName = playerEntity.getLegacyDisplayName();
+ String tool = itemInHand != null ? itemInHand : "Hand";
+ 
+ getLogger().at(Level.INFO).log(playerName + " mining " + blockTypeId + 
+ " - " + String.format("%.1f%%", currentDamage * 100) + " with " + tool);
+ 
+ // Example: Drain stamina while mining
+ StatsHelper.addStat(playerEntity, "Stamina", -0.5f);
+ 
+ // Example: Apply mining fatigue if low on stamina
+ float stamina = StatsHelper.getStamina(playerEntity);
+ if (stamina < 10.0f) {
+ // Slow down mining by reducing damage
+ // (Note: This is just for demonstration, actual implementation would vary)
+ }
+ 
+ // Example: Grant XP for mining
+ if (currentDamage >= 1.0f) {
+ grantMiningXP(playerEntity, blockTypeId);
+ }
  }
 });
 ```

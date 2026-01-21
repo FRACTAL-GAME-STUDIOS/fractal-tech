@@ -209,12 +209,198 @@ EcsEventHelper.onBlockDamage(world, (position, blockTypeId, currentDamage, damag
 - Mining fatigue effects
 - Protected block warnings
 
+### onBlockDamage(world, callback) - With Block Health Access
+
+**NEW!** Advanced version that provides read/write access to block health for implementing mining speed multipliers, efficiency enchantments, and custom mining mechanics.
+
+**Callback Parameter:**
+- `BlockDamageContext context` - Context object with read/write access to block health
+
+**BlockDamageContext Methods:**
+
+**Read Methods:**
+- `getPosition()` - Block position
+- `getBlockTypeId()` - Block type ID
+- `getGatherType()` - Block gather type (e.g., "Rocks", "Woods", "Soils", "SoftBlocks", etc.)
+- `getCurrentDamage()` - Current damage from event
+- `getDamage()` - Damage amount this tick
+- `getItemInHand()` - Item player is holding (null if empty)
+- `getPlayerEntity()` - Player entity
+- `getWorld()` - World instance
+- `getBlockHealth()` - Current block health (0.0 = destroyed, 1.0 = full health)
+
+**Write Methods:**
+- `setBlockHealth(float)` - Set health directly (0.0 to 1.0)
+- `applyDamage(float)` - Apply additional damage to the block
+- `repairBlock(float)` - Repair the block by a certain amount
+- `setMiningSpeedMultiplier(float)` - **Multiply mining speed** (2.0 = 2x faster, 0.5 = 2x slower)
+
+**Example - Efficiency Enchantment (Gather Type Filtering):**
+```java
+EcsEventHelper.onBlockDamage(world, (context) -> {
+ String gatherType = context.getGatherType();
+ String tool = context.getItemInHand();
+ 
+ // Pickaxe is 2x faster on ALL rocks (not just specific block IDs!)
+ if ("Tool_Pickaxe_Crude".equals(tool) && "Rocks".equals(gatherType)) {
+ context.setMiningSpeedMultiplier(2.0f);
+ }
+ 
+ // Axe is 2x faster on ALL woods
+ if ("Tool_Axe_Crude".equals(tool) && "Woods".equals(gatherType)) {
+ context.setMiningSpeedMultiplier(2.0f);
+ }
+ 
+ // Shovel is 2x faster on ALL soils
+ if ("Tool_Shovel_Crude".equals(tool) && "Soils".equals(gatherType)) {
+ context.setMiningSpeedMultiplier(2.0f);
+ }
+ 
+ // VIP player gets 3x mining speed on all blocks
+ String playerName = EntityHelper.getName(context.getPlayerEntity());
+ if ("VIPPlayer".equals(playerName)) {
+ context.setMiningSpeedMultiplier(3.0f);
+ }
+});
+```
+
+**Available Gather Types:**
+- `"Rocks"` - Stone, granite, slate, etc.
+- `"Woods"` - Trees, logs, wooden blocks
+- `"Soils"` - Dirt, grass, sand, etc.
+- `"SoftBlocks"` - Easily breakable blocks
+- `"Benches"` - Crafting benches and workstations
+- `"VolcanicRocks"` - Volcanic stone types
+
+**Example - Custom Mining Mechanics:**
+```java
+EcsEventHelper.onBlockDamage(world, (context) -> {
+ // Make Rock_Slate require diamond pickaxe
+ if ("Rock_Slate".equals(context.getBlockTypeId())) {
+ if (!"Tool_Pickaxe_Iron".equals(context.getItemInHand())) {
+ // Wrong tool - repair the block (cancel damage)
+ context.repairBlock(context.getDamage());
+ 
+ if (context.getPlayerEntity() != null) {
+ PlayerHelper.sendMessage(context.getPlayerEntity(), 
+ "You need a iron pickaxe to mine Slate!");
+ }
+ }
+ }
+ 
+ // Apply extra damage when player has strength buff
+ if (hasStrengthBuff(context.getPlayerEntity())) {
+ context.applyDamage(context.getDamage() * 0.5f); // 50% extra damage
+ }
+});
+```
+
+**Example - Direct Health Manipulation:**
+```java
+EcsEventHelper.onBlockDamage(world, (context) -> {
+ // Instant-break glass blocks
+ if (context.getBlockTypeId().contains("Glass")) {
+ context.setBlockHealth(0.0f); // Instantly destroy
+ }
+ 
+ // Make bedrock indestructible
+ if ("Rock_Bedrock".equals(context.getBlockTypeId())) {
+ context.setBlockHealth(1.0f); // Always full health
+ }
+});
+```
+
+**Use Cases:**
+- Efficiency enchantments (like Minecraft)
+- Tool-specific mining speeds
+- VIP/permission-based mining boosts
+- Custom block hardness requirements
+- Strength/weakness buffs affecting mining
+- Instant-break mechanics for certain blocks
+- Indestructible blocks
+- Mining fatigue effects
+- Progressive mining difficulty
+
+### onBlockInteract(world, callback)
+
+Detects when a player interacts with a block (right-click or F key).
+
+**Callback Parameters (Basic):**
+- `Vector3i position` - The exact position of the block being interacted with
+- `String blockTypeId` - The block type ID (e.g., "Chest_Wood", "Door_Wood")
+
+**Callback Parameters (With Player Entity):**
+- `Vector3i position` - The exact position of the block being interacted with
+- `String blockTypeId` - The block type ID (e.g., "Chest_Wood", "Door_Wood")
+- `Entity playerEntity` - The player entity who interacted with the block
+
+**Features:**
+- Fires when a player right-clicks or presses F on a block
+- Provides exact block position and type
+- Works with all interactable blocks (chests, doors, buttons, etc.)
+- Optional player entity parameter for accessing player-specific data
+
+**Example (Basic):**
+```java
+EcsEventHelper.onBlockInteract(world, (position, blockTypeId) -> {
+ getLogger().at(Level.INFO).log("Block interacted: " + blockTypeId + " at " + position);
+ 
+ // Example: Track container usage
+ if (blockTypeId.contains("Chest")) {
+ incrementChestOpenCount();
+ }
+});
+```
+
+**Example (With Player Entity):**
+```java
+EcsEventHelper.onBlockInteract(world, (position, blockTypeId, playerEntity) -> {
+ if (playerEntity != null) {
+ String playerName = EntityHelper.getName(playerEntity);
+ getLogger().at(Level.INFO).log(playerName + " interacted with " + blockTypeId + " at " + position);
+ 
+ // Example: Check permissions for container access
+ if (blockTypeId.contains("Chest")) {
+ if (!PlayerHelper.hasPermission(playerEntity, "container.access")) {
+ PlayerHelper.sendMessage(playerEntity, "You don't have permission to open chests!");
+ return;
+ }
+ }
+ 
+ // Example: Track player interactions
+ if (blockTypeId.contains("Door")) {
+ PlayerHelper.sendMessage(playerEntity, "Door opened!");
+ }
+ 
+ // Example: Custom container registration
+ if (ContainerHelper.isContainerType(blockTypeId)) {
+ ContainerHelper.onContainerChange(world, position, (transaction) -> {
+ getLogger().at(Level.INFO).log(playerName + " modified container: " + transaction.getAction());
+ });
+ }
+ }
+});
+```
+
+**Use Cases:**
+- Container access tracking
+- Permission-based block interactions
+- Custom door/button mechanics
+- Player activity monitoring
+- Container registration on interaction
+- Block usage statistics
+- Interactive block rewards
+
 ### onZoneDiscovery(world, callback)
 
 Detects when a player discovers a new zone on the map.
 
-**Callback Parameters:**
+**Callback Parameters (Basic):**
 - `WorldMapTracker.ZoneDiscoveryInfo discoveryInfo` - Complete zone discovery information
+
+**Callback Parameters (With Player Entity):**
+- `WorldMapTracker.ZoneDiscoveryInfo discoveryInfo` - Complete zone discovery information
+- `Entity playerEntity` - The player entity who discovered the zone
 
 **ZoneDiscoveryInfo Fields:**
 - `zoneName()` - The name of the discovered zone
@@ -232,8 +418,9 @@ Detects when a player discovers a new zone on the map.
 - Provides complete zone metadata
 - Distinguishes between major and minor zones
 - Includes display and sound settings
+- Optional player entity parameter for accessing player-specific data
 
-**Example:**
+**Example (Basic):**
 ```java
 EcsEventHelper.onZoneDiscovery(world, (discoveryInfo) -> {
  String zoneName = discoveryInfo.zoneName();
@@ -246,11 +433,33 @@ EcsEventHelper.onZoneDiscovery(world, (discoveryInfo) -> {
  // Major zone discovered - award achievement
  WorldHelper.log(world, "Major discovery: " + zoneName + "!");
  }
+});
+```
+
+**Example (With Player Entity):**
+```java
+EcsEventHelper.onZoneDiscovery(world, (discoveryInfo, playerEntity) -> {
+ if (playerEntity != null) {
+ String playerName = EntityHelper.getName(playerEntity);
+ String zoneName = discoveryInfo.zoneName();
+ String region = discoveryInfo.regionName();
+ 
+ getLogger().at(Level.INFO).log(playerName + " discovered: " + zoneName + " in " + region);
+ 
+ // Example: Send personalized message
+ PlayerHelper.sendMessage(playerEntity, "You discovered " + zoneName + "!");
  
  // Example: Custom rewards for specific zones
  if ("Emerald_Grove".equals(zoneName)) {
- // Give bonus items for discovering Emerald Grove
- InventoryHelper.giveItem(player, "Gem_Emerald", 5);
+ InventoryHelper.giveItem(playerEntity, "Gem_Emerald", 5);
+ PlayerHelper.sendMessage(playerEntity, "You received 5 Emeralds for discovering Emerald Grove!");
+ }
+ 
+ // Example: Grant exploration XP
+ if (discoveryInfo.major()) {
+ StatsHelper.addStat(playerEntity, "Mana", 10.0f);
+ PlayerHelper.sendMessage(playerEntity, "Major discovery! +10 Mana");
+ }
  }
 });
 ```
@@ -263,6 +472,7 @@ EcsEventHelper.onZoneDiscovery(world, (discoveryInfo) -> {
 - Zone-specific welcome messages
 - Map completion tracking
 - Region unlock systems
+- Player-specific discovery notifications
 
 ## Complete Usage Example
 
@@ -446,6 +656,93 @@ ECS events are efficient because they:
 - Are managed by Hytale's optimized ECS system
 
 However, avoid expensive operations in your callbacks. If you need to do heavy processing, use `WorldHelper.executeOnWorldThread()` to defer it.
+
+---
+
+## onGameModeChange(world, callback)
+
+Detects when a player changes game mode (Creative, Adventure, etc.).
+
+**Callback Parameters:**
+- `Entity playerEntity` - The player entity changing game mode
+- `GameMode newGameMode` - The new game mode being switched to
+
+**Features:**
+- **Cancellable event** - Can prevent game mode changes by cancelling the event
+- Works with both manual mode changes and `PlayerHelper.setGameMode()`
+- Fires for all game mode transitions
+- Provides player entity for permission checks or logging
+
+**Example:**
+```java
+EcsEventHelper.onGameModeChange(world, (playerEntity, newGameMode) -> {
+ String playerName = EntityHelper.getName(playerEntity);
+ getLogger().at(Level.INFO).log(playerName + " changed to " + newGameMode + " mode");
+ 
+ // Example: Log creative mode usage for moderation
+ if (newGameMode == GameMode.valueOf("Creative")) {
+ logCreativeModeUsage(playerName);
+ }
+ 
+ // Example: Apply mode-specific effects
+ if (newGameMode == GameMode.valueOf("Adventure")) {
+ PlayerHelper.sendMessage(playerEntity, "Welcome to Adventure mode!");
+ }
+});
+```
+
+**Use Cases:**
+- Log game mode changes for moderation
+- Apply mode-specific effects or permissions
+- Prevent mode switching in certain areas
+- Track creative mode usage
+- Custom mode change handlers
+
+---
+
+## onMoonPhaseChange(world, callback)
+
+Detects when the moon phase changes in the world.
+
+**Callback Parameters:**
+- `int newMoonPhase` - The new moon phase (typically 0-7)
+
+**Features:**
+- Tracks lunar cycle progression
+- Fires once per moon phase change
+- Useful for time-based mechanics
+
+**Example:**
+```java
+EcsEventHelper.onMoonPhaseChange(world, (moonPhase) -> {
+ getLogger().at(Level.INFO).log("Moon phase changed to: " + moonPhase);
+ 
+ // Example: Full moon werewolf transformation
+ if (moonPhase == 0) { // Full moon
+ world.getPlayers().forEach(player -> {
+ if (hasWerewolfCurse(player)) {
+ transformToWerewolf(player);
+ PlayerHelper.sendMessage(player, "The full moon rises... you transform!");
+ }
+ });
+ }
+ 
+ // Example: Moon-dependent mob spawning
+ if (moonPhase >= 6) { // New moon or near-new moon
+ increaseMobSpawnRate(world, 1.5f);
+ }
+});
+```
+
+**Use Cases:**
+- Werewolf/vampire mechanics triggered by full moon
+- Lunar calendar events
+- Time-based mob spawning
+- Moon-dependent crafting recipes
+- Celestial event systems
+- Tide mechanics
+
+---
 
 ## Comparison with EventHelper
 

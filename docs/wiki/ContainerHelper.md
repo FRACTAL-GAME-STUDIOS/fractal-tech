@@ -2,8 +2,6 @@
 
 Utilities for tracking item container changes in Hytale. Provides easy-to-use methods for detecting when items are added, removed, or changed in containers like chests, furnaces, and other block-based item storage.
 
-Note: Currently only works with chests, other containers are WIP.
-
 ## Overview
 
 **What it does:**
@@ -24,6 +22,59 @@ Note: Currently only works with chests, other containers are WIP.
 - Containers must exist at the position (have an ItemContainerState)
 - This is not a global event - you track specific containers
 - Listeners persist until unregistered or world is cleared
+
+## Transaction Cancellation
+
+Container transactions can now be cancelled, similar to EquipmentHelper. When you cancel a transaction, ContainerHelper will automatically revert **BOTH** the container and the player's inventory to their state before the transaction occurred.
+
+**How to cancel:**
+```java
+ContainerHelper.onContainerChange(world, position, (transaction) -> {
+ // Check if someone is trying to take a specific item
+ if ("Weapon_Sword_Diamond".equals(transaction.getItemId()) && transaction.isRemoved()) {
+ // Cancel the transaction - item stays in chest
+ transaction.setCancelled(true);
+ WorldHelper.log(world, "Cannot remove diamond sword from this chest!");
+ }
+});
+```
+
+**Player-specific restrictions:**
+```java
+// Block specific player from using containers
+ContainerHelper.onContainerChange(world, position, (transaction) -> {
+ // Get all players and check if restricted player is interacting
+ for (Entity entity : EntityHelper.getEntities(world)) {
+ if (EntityHelper.isPlayer(entity)) {
+ String playerName = EntityHelper.getName(entity);
+ if ("RestrictedPlayer".equals(playerName)) {
+ transaction.setCancelled(true);
+ PlayerHelper.sendMessage(entity, "You are not allowed to use this container!");
+ break;
+ }
+ }
+ }
+});
+```
+
+**Use cases:**
+- Prevent removing specific items from containers
+- Block adding certain items to containers
+- Permission-based container access (player-specific restrictions)
+- Protected storage systems
+- Quest item restrictions
+- VIP-only container access
+- Admin-only storage
+
+**How it works:**
+- Automatically reverts the transaction using reflection
+- Restores **container slots** to their original state
+- Restores **player inventory slots** to their original state (via `otherContainer`)
+- Handles both `ItemStackSlotTransaction` (normal click) and `ItemStackTransaction` (shift-click)
+- Handles both `MOVE_FROM_SELF` (removing) and `MOVE_TO_SELF` (adding)
+- Preserves item data (durability, metadata, etc.)
+- Uses `ThreadLocal` re-entry guard to prevent infinite loops
+- Works with all transaction types
 
 ## Available Methods
 

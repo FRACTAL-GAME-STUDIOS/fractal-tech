@@ -36,6 +36,84 @@ if (mode != null) {
 
 ---
 
+#### `setGameMode(World world, Entity entity, GameMode gameMode)`
+
+Set the player's game mode.
+
+This method uses Hytale's internal Player.setGameMode() which:
+- Fires a ChangeGameModeEvent (can be cancelled by other plugins)
+- Updates the movement manager
+- Sends game mode packet to the client
+- Runs game mode switch handlers
+
+**Parameters:**
+- `world` - The world the player is in
+- `entity` - The entity (must be a Player)
+- `gameMode` - The GameMode to set (Creative, Adventure)
+
+**Returns:** `boolean` - true if game mode was changed successfully, false if not a player or event was cancelled
+
+**Available GameModes:**
+- `GameMode.valueOf("Creative")` - Creative mode (fly, no damage, instant break)
+- `GameMode.valueOf("Adventure")` - Adventure mode (normal gameplay)
+
+**Example:**
+```java
+// Switch player to creative mode
+GameMode creative = GameMode.valueOf("Creative");
+boolean success = PlayerHelper.setGameMode(world, player, creative);
+if (success) {
+ PlayerHelper.sendMessage(player, "You are now in Creative mode!");
+} else {
+ PlayerHelper.sendMessage(player, "Could not change game mode!");
+}
+
+// Switch player to adventure mode
+GameMode adventure = GameMode.valueOf("Adventure");
+PlayerHelper.setGameMode(world, player, adventure);
+```
+
+**Admin Command Example:**
+```java
+EventHelper.onPlayerChat(plugin, (username, message) -> {
+ Entity player = EntityHelper.getPlayerByName(world, username);
+ if (player == null) return;
+ 
+ if (message.equals("!creative")) {
+ if (!PlayerHelper.hasPermission(player, "admin.gamemode")) {
+ PlayerHelper.sendMessage(player, "No permission!");
+ return;
+ }
+ 
+ GameMode creative = GameMode.valueOf("Creative");
+ if (PlayerHelper.setGameMode(world, player, creative)) {
+ PlayerHelper.sendMessage(player, "Creative mode enabled!");
+ }
+ }
+ 
+ if (message.equals("!adventure")) {
+ GameMode adventure = GameMode.valueOf("Adventure");
+ PlayerHelper.setGameMode(world, player, adventure);
+ PlayerHelper.sendMessage(player, "Adventure mode enabled!");
+ }
+});
+```
+
+**Use Cases:**
+- Admin commands
+- Minigame mode switching
+- Event systems
+- Creative building zones
+- PvP arena mode changes
+
+**Important Notes:**
+- The ChangeGameModeEvent can be cancelled by other plugins
+- Game mode changes are immediately synced to the client
+- Movement abilities are automatically updated (flying, collision, etc.)
+- Use `GameMode.valueOf()` to get the enum values with correct capitalization
+
+---
+
 ### Messaging
 
 #### `sendMessage(Entity entity, String message)`
@@ -87,6 +165,93 @@ boolean sent = PlayerHelper.sendMessage(player, formattedMsg);
 - Colored messages
 - Rich text notifications
 - Custom message styling
+
+---
+
+### Block Targeting
+
+#### `getLookingAt(World world, Entity entity, double checkDistance)`
+
+Get the block a player is currently looking at with distance information.
+
+**Parameters:**
+- `world` - The world
+- `entity` - The player entity
+- `checkDistance` - Maximum distance to check (e.g., 5.0 for 5 blocks)
+
+**Returns:** `LookingAtResult` - Object containing block position, type, and distance
+
+**Example:**
+```java
+// Get what the player is looking at within 5 blocks
+LookingAtResult result = PlayerHelper.getLookingAt(world, player, 5.0);
+
+if (result.hasBlock()) {
+ String blockId = result.getBlockId();
+ double distance = result.getDistance();
+ Vector3i position = result.getBlockPosition();
+ 
+ PlayerHelper.sendMessage(player, "Looking at: " + blockId + 
+ " at distance: " + distance);
+}
+```
+
+**Use Cases:**
+- Block interaction systems
+- Mining/building tools
+- Block inspection tools
+- Targeting mechanics
+- Distance-based interactions
+
+---
+
+#### `getLookingAt(World world, Entity entity)`
+
+Get the block a player is looking at with default distance of 5 blocks.
+
+**Parameters:**
+- `world` - The world
+- `entity` - The player entity
+
+**Returns:** `LookingAtResult` - Object containing block position, type, and distance
+
+**Example:**
+```java
+// Get what the player is looking at (default 5 blocks)
+LookingAtResult result = PlayerHelper.getLookingAt(world, player);
+
+if (result.hasBlock()) {
+ PlayerHelper.sendMessage(player, "You're looking at: " + result.getBlockId());
+}
+```
+
+---
+
+### LookingAtResult Class
+
+The `LookingAtResult` class provides convenient access to block targeting information.
+
+**Methods:**
+- `getBlockPosition()` - Returns `Vector3i` position of the block
+- `getBlockType()` - Returns `BlockType` object
+- `getBlockId()` - Returns block ID string (e.g., "Rock_Stone")
+- `getDistance()` - Returns distance to the block
+- `hasBlock()` - Returns true if a block was found
+
+**Example:**
+```java
+LookingAtResult result = PlayerHelper.getLookingAt(world, player);
+
+if (result.hasBlock()) {
+ Vector3i pos = result.getBlockPosition();
+ BlockType type = result.getBlockType();
+ String id = result.getBlockId();
+ double dist = result.getDistance();
+ 
+ PlayerHelper.sendMessage(player, 
+ "Block: " + id + " at (" + pos.x + ", " + pos.y + ", " + pos.z + ")");
+}
+```
 
 ---
 

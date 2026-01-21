@@ -27,9 +27,15 @@ A utility library that simplifies common Hytale modding tasks by providing teste
 - [InventoryHelper](InventoryHelper) - Inventory management, item giving/removing, hotbar operations
 - [UIHelper](UIHelper) - Custom pages, HUD management, UI animations
 
+### Audio & Visual Helpers
+- [ParticleHelper](ParticleHelper) - Particle effect spawning (535+ particle systems), 2D/3D particles, scale control
+- [SoundHelper](SoundHelper) - Sound playback (1156+ sound events), 2D/3D audio, volume/pitch control
+
 ## Useful Information
 
 - [Complete Block List](BlockList) - All 3,947+ blocks with IDs and names
+- [Particle System List](ParticleList) - All 535+ particle systems with IDs
+- [Sound Event List](SoundList) - All 1156+ sound events with IDs
 - [Full Entity List](https://hytalemodding.dev/en/docs/server/entities)
 
 
@@ -53,6 +59,8 @@ This project provides a comprehensive utility library for Hytale modding with he
 - **Inventory management** - Give/remove items, check inventory, hotbar operations, slot management
 - **Player utilities** - Messaging, permissions, game mode checking, skin data access
 - **UI management** - Custom pages, HUD control, fade animations
+- **Particle effects** - Spawn 535+ particle systems at positions/blocks/entities, scale control, temporary vs looping particles
+- **Sound playback** - Play 1156+ sound events in 2D (UI) or 3D (positional), volume/pitch control, sound categories
 
 ## Quick Start
 
@@ -90,6 +98,20 @@ EventHelper.onPlayerJoinWorld(plugin, world -> {
  new LootHelper.ItemDrop("Rock_Gem_Diamond", 3)
  );
  });
+});
+
+// Example: Particle and sound effects
+EcsEventHelper.onBlockBreak(world, (position, blockTypeId, playerEntity) -> {
+ // Spawn explosion particle
+ ParticleHelper.spawnParticleAtBlock(world, "Explosion_Medium", position);
+ 
+ // Play 3D impact sound at block position
+ SoundHelper.playSound3DAtBlock(world, "SFX_Golem_Earth_Slam_Impact", position);
+ 
+ // Play 2D UI sound to the player who broke the block
+ if (playerEntity != null) {
+ SoundHelper.playSound2DToPlayer(world, "SFX_Axe_Special_Impact", playerEntity);
+ }
 });
 ```
 

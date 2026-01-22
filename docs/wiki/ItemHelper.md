@@ -380,7 +380,295 @@ if (state instanceof ItemContainerState chestState) {
 
 ---
 
+## Item Entity Methods
+
+Methods for working with dropped item entities in the world.
+
+### `getItemEntities(World world)`
+Get all dropped item entities in the world.
+
+**Parameters:**
+- `world` - The world to search in
+
+**Returns:** `List<ItemEntity>` - List of all dropped items
+
+**Example:**
+```java
+List<ItemHelper.ItemEntity> items = ItemHelper.getItemEntities(world);
+for (ItemHelper.ItemEntity item : items) {
+ WorldHelper.log(world, "Found: " + item.getQuantity() + "x " + item.getItemId() + 
+ " at " + item.getPosition());
+}
+```
+
+### `getItemEntitiesByItemId(World world, String itemId)`
+Get all dropped item entities of a specific item type.
+
+**Parameters:**
+- `world` - The world to search in
+- `itemId` - The item ID to filter by (e.g., "Food_Pork_Raw")
+
+**Returns:** `List<ItemEntity>` - List of matching dropped items
+
+**Example:**
+```java
+// Find all dropped pork
+List<ItemHelper.ItemEntity> pork = ItemHelper.getItemEntitiesByItemId(world, "Food_Pork_Raw");
+WorldHelper.log(world, "Found " + pork.size() + " dropped pork items");
+```
+
+### `getItemEntitiesInRadius(World world, Vector3d center, double radius)`
+Get all dropped item entities within a radius of a position.
+
+**Parameters:**
+- `world` - The world to search in
+- `center` - Center position to search from
+- `radius` - Search radius in blocks
+
+**Returns:** `List<ItemEntity>` - List of items within the radius
+
+**Example:**
+```java
+// Find items within 10 blocks of player
+Vector3d playerPos = EntityHelper.getPosition(player);
+List<ItemHelper.ItemEntity> nearbyItems = ItemHelper.getItemEntitiesInRadius(world, playerPos, 10.0);
+WorldHelper.log(world, "Found " + nearbyItems.size() + " items nearby");
+```
+
+### `removeItemEntity(World world, ItemEntity itemEntity)`
+Remove a specific item entity from the world.
+
+**Parameters:**
+- `world` - The world containing the item entity
+- `itemEntity` - The ItemEntity to remove
+
+**Returns:** `boolean` - true if successfully removed
+
+**Example:**
+```java
+List<ItemHelper.ItemEntity> items = ItemHelper.getItemEntities(world);
+for (ItemHelper.ItemEntity item : items) {
+ if ("Food_Pork_Raw".equals(item.getItemId())) {
+ ItemHelper.removeItemEntity(world, item);
+ WorldHelper.log(world, "Removed pork at " + item.getPosition());
+ }
+}
+```
+
+### `removeAllItemEntities(World world)`
+Remove all dropped item entities from the world.
+
+**Parameters:**
+- `world` - The world to clear items from
+
+**Returns:** `int` - Number of items removed
+
+**Example:**
+```java
+int removed = ItemHelper.removeAllItemEntities(world);
+WorldHelper.broadcast(world, "Cleared " + removed + " dropped items from the world!");
+```
+
+### `removeItemEntitiesByItemId(World world, String itemId)`
+Remove all dropped item entities of a specific type.
+
+**Parameters:**
+- `world` - The world to clear items from
+- `itemId` - The item ID to remove (e.g., "Food_Pork_Raw")
+
+**Returns:** `int` - Number of items removed
+
+**Example:**
+```java
+// Remove all dropped diamonds
+int removed = ItemHelper.removeItemEntitiesByItemId(world, "Rock_Gem_Diamond");
+WorldHelper.log(world, "Removed " + removed + " dropped diamonds");
+```
+
+### `countItemEntities(World world)`
+Count the total number of dropped item entities in the world.
+
+**Parameters:**
+- `world` - The world to count items in
+
+**Returns:** `int` - Number of dropped items
+
+**Example:**
+```java
+int count = ItemHelper.countItemEntities(world);
+WorldHelper.log(world, "There are " + count + " dropped items in the world");
+```
+
+### `countItemEntitiesByItemId(World world, String itemId)`
+Count dropped item entities of a specific type.
+
+**Parameters:**
+- `world` - The world to count items in
+- `itemId` - The item ID to count
+
+**Returns:** `int` - Number of matching dropped items
+
+**Example:**
+```java
+int torchCount = ItemHelper.countItemEntitiesByItemId(world, "Furniture_Crude_Torch");
+WorldHelper.log(world, "There are " + torchCount + " dropped torches");
+```
+
+### `teleportItemEntity(World world, ItemEntity itemEntity, Vector3d position)`
+Teleport a specific item entity to a new position.
+
+**Parameters:**
+- `world` - The world containing the item entity
+- `itemEntity` - The ItemEntity to teleport
+- `position` - The new position
+
+**Returns:** `boolean` - true if successfully teleported
+
+**Example:**
+```java
+List<ItemHelper.ItemEntity> items = ItemHelper.getItemEntities(world);
+Vector3d destination = new Vector3d(100, 64, 100);
+
+for (ItemHelper.ItemEntity item : items) {
+ if ("Rock_Gem_Diamond".equals(item.getItemId())) {
+ ItemHelper.teleportItemEntity(world, item, destination);
+ WorldHelper.log(world, "Teleported diamond to " + destination);
+ }
+}
+```
+
+### `teleportItemEntity(World world, ItemEntity itemEntity, double x, double y, double z)`
+Teleport a specific item entity to coordinates.
+
+**Parameters:**
+- `world` - The world containing the item entity
+- `itemEntity` - The ItemEntity to teleport
+- `x`, `y`, `z` - Destination coordinates
+
+**Returns:** `boolean` - true if successfully teleported
+
+**Example:**
+```java
+ItemHelper.ItemEntity item = items.get(0);
+ItemHelper.teleportItemEntity(world, item, 100, 64, 100);
+```
+
+### `teleportItemEntitiesByItemId(World world, String itemId, Vector3d position)`
+Teleport all dropped items of a specific type to a position.
+
+**Parameters:**
+- `world` - The world to search in
+- `itemId` - The item ID to teleport (e.g., "Food_Pork_Raw")
+- `position` - The destination position
+
+**Returns:** `int` - Number of items teleported
+
+**Example:**
+```java
+// Teleport all dropped torches to spawn
+Vector3d spawn = new Vector3d(0, 64, 0);
+int teleported = ItemHelper.teleportItemEntitiesByItemId(world, "Furniture_Crude_Torch", spawn);
+WorldHelper.broadcast(world, "Teleported " + teleported + " torches to spawn!");
+```
+
+### `teleportItemEntitiesInRadius(World world, Vector3d center, double radius, Vector3d destination)`
+Teleport all dropped items within a radius to a position.
+
+**Parameters:**
+- `world` - The world to search in
+- `center` - Center position to search from
+- `radius` - Search radius in blocks
+- `destination` - The destination position
+
+**Returns:** `int` - Number of items teleported
+
+**Example:**
+```java
+// Teleport items near player to a chest location
+Vector3d playerPos = EntityHelper.getPosition(player);
+Vector3d chestPos = new Vector3d(100, 64, 100);
+int teleported = ItemHelper.teleportItemEntitiesInRadius(world, playerPos, 10.0, chestPos);
+WorldHelper.log(world, "Teleported " + teleported + " nearby items to chest");
+```
+
+### `teleportAllItemEntities(World world, Vector3d position)`
+Teleport all dropped items in the world to a position.
+
+**Parameters:**
+- `world` - The world to search in
+- `position` - The destination position
+
+**Returns:** `int` - Number of items teleported
+
+**Example:**
+```java
+// Teleport all items to spawn
+Vector3d spawn = new Vector3d(0, 64, 0);
+int teleported = ItemHelper.teleportAllItemEntities(world, spawn);
+WorldHelper.broadcast(world, "Teleported all " + teleported + " items to spawn!");
+```
+
+### ItemEntity Class
+Represents a dropped item entity with the following properties:
+- `getRef()` - Get the entity reference (for removal/teleportation)
+- `getItemId()` - Get the item ID (e.g., "Food_Pork_Raw")
+- `getQuantity()` - Get the item quantity
+- `getPosition()` - Get the world position (Vector3d)
+
+**Technical Implementation:**
+- Uses Hytale's ECS (Entity Component System) for efficient queries
+- Queries `EntityStore` for entities with `ItemComponent`
+- Only iterates through actual item entities (very efficient)
+- Uses `CommandBuffer.removeEntity()` for proper removal
+- Modifies `TransformComponent.setPosition()` for teleportation
+
+---
+
+## Complete Example: Item Cleanup System
+
+```java
+// Clean up old dropped items periodically
+WorldHelper.scheduleRepeating(world, 300, () -> { // Every 5 minutes
+ // Get all dropped items
+ List<ItemHelper.ItemEntity> items = ItemHelper.getItemEntities(world);
+ 
+ // Log what we found
+ WorldHelper.log(world, "Found " + items.size() + " dropped items");
+ 
+ // Count by type
+ int diamonds = ItemHelper.countItemEntitiesByItemId(world, "Rock_Gem_Diamond");
+ int torches = ItemHelper.countItemEntitiesByItemId(world, "Furniture_Crude_Torch");
+ WorldHelper.log(world, " Diamonds: " + diamonds + ", Torches: " + torches);
+ 
+ // Remove all junk items
+ int removed = ItemHelper.removeItemEntitiesByItemId(world, "Ingredient_Bone_Fragment");
+ if (removed > 0) {
+ WorldHelper.broadcast(world, "Cleaned up " + removed + " bone fragments");
+ }
+ 
+ // Remove items far from players
+ for (Entity player : world.getPlayers()) {
+ Vector3d playerPos = EntityHelper.getPosition(player);
+ List<ItemHelper.ItemEntity> farItems = new ArrayList<>();
+ 
+ for (ItemHelper.ItemEntity item : items) {
+ double distance = EntityHelper.getDistance(playerPos, item.getPosition());
+ if (distance > 100.0) { // More than 100 blocks away
+ farItems.add(item);
+ }
+ }
+ 
+ for (ItemHelper.ItemEntity item : farItems) {
+ ItemHelper.removeItemEntity(world, item);
+ }
+ }
+});
+```
+
+---
+
 ## Related Helpers
-- [BlockStateHelper](BlockStateHelper) - For working with block states and containers
-- [InventoryHelper](InventoryHelper) - For player inventory operations
-- [BlockHelper](BlockHelper) - For placing and manipulating blocks
+- [BlockStateHelper](BlockStateHelper.md) - For working with block states and containers
+- [InventoryHelper](InventoryHelper.md) - For player inventory operations
+- [BlockHelper](BlockHelper.md) - For placing and manipulating blocks
+- [EntityHelper](EntityHelper.md) - For entity operations and queries

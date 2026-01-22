@@ -303,8 +303,37 @@ Entity chicken = EntityHelper.spawnNPC(world, "Chicken",
  playerPos.getX() - 5, playerPos.getY(), playerPos.getZ(), (float) Math.PI);
 ```
 
+### removeNearbyItemEntities(world, position, itemId, quantity, radius)
+
+Remove dropped item entities within a radius of a position. Used internally by ContainerHelper to clean up dropped items after cancelled transactions.
+
+```java
+// Remove all item entities within 5 blocks of a position
+Vector3i chestPos = new Vector3i(100, 64, 100);
+EntityHelper.removeNearbyItemEntities(world, chestPos, null, 0, 5.0);
+
+// Remove specific item type (Food_Pork_Raw) within 10 blocks
+EntityHelper.removeNearbyItemEntities(world, chestPos, "Food_Pork_Raw", 1, 10.0);
+```
+
+**Parameters:**
+- `world` - The world to search in
+- `position` - Center position to search from (Vector3i)
+- `itemId` - Item ID to match (currently not used for filtering, pass null)
+- `quantity` - Quantity to match (currently not used for filtering, pass 0)
+- `radius` - Search radius in blocks
+
+**How It Works:**
+This method uses Hytale's ECS (Entity Component System) to efficiently find and remove item entities:
+1. Queries the EntityStore for all entities with `ItemComponent` (dropped items)
+2. Checks each item entity's distance from the center position
+3. Removes entities within the specified radius using `CommandBuffer.removeEntity()`
+
+**Note:** This is primarily used internally by ContainerHelper to prevent item duplication when transactions are cancelled. The `itemId` and `quantity` parameters are reserved for future filtering functionality.
+
 ## See Also
 
 - [WorldHelper](WorldHelper) - For world operations
 - [BlockHelper](BlockHelper) - For block operations
+- [ContainerHelper](ContainerHelper) - For container transaction management
 - [Home](Home) - Back to main page

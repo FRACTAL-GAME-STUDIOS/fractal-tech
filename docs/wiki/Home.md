@@ -17,7 +17,7 @@ A utility library that simplifies common Hytale modding tasks by providing teste
 ### Block & Item Helpers
 - [BlockHelper](BlockHelper) - Block manipulation, region operations
 - [BlockStateHelper](BlockStateHelper) - Block state management (chests, signs, containers)
-- [ItemHelper](ItemHelper) - Item creation, container management, random slot placement
+- [ItemHelper](ItemHelper) - Item creation, container management, random slot placement, dropped item entity management (get, filter, remove, teleport)
 - [LootHelper](LootHelper) - Custom block drops, loot tables, item entity spawning
 - [ContainerHelper](ContainerHelper) - Container change tracking, chest protection, item logging
 - [EquipmentHelper](EquipmentHelper) - Equipment change tracking (armor, offhand/utility, tools)
@@ -26,6 +26,7 @@ A utility library that simplifies common Hytale modding tasks by providing teste
 - [PlayerHelper](PlayerHelper) - Player utilities, messaging, permissions, game mode, skin data
 - [InventoryHelper](InventoryHelper) - Inventory management, item giving/removing, hotbar operations
 - [UIHelper](UIHelper) - Custom pages, HUD management, UI animations
+- [TitleHelper](TitleHelper) - On-screen title notifications (major/minor), fade animations
 
 ### Audio & Visual Helpers
 - [ParticleHelper](ParticleHelper) - Particle effect spawning (535+ particle systems), 2D/3D particles, scale control
@@ -55,6 +56,7 @@ This project provides a comprehensive utility library for Hytale modding with he
 - **Container tracking** - Automatic transaction parsing with ContainerTransaction API, interaction-based registration, correct shift-click detection, protection systems
 - **Equipment tracking** - Detect equip/unequip/replace for armor, offhand/utility and tools with parsed `EquipmentChange`
 - **Item & container operations** - Item creation, container filling (sequential & random), inventory queries
+- **Dropped item entity management** - Get all dropped items, filter by type/radius, remove items, teleport items, count items
 - **ECS component manipulation** - Type-safe component operations
 - **Inventory management** - Give/remove items, check inventory, hotbar operations, slot management
 - **Player utilities** - Messaging, permissions, game mode checking, skin data access
@@ -113,6 +115,15 @@ EcsEventHelper.onBlockBreak(world, (position, blockTypeId, playerEntity) -> {
  SoundHelper.playSound2DToPlayer(world, "SFX_Axe_Special_Impact", playerEntity);
  }
 });
+
+// Example: Item magnet - teleport nearby items to player
+Vector3d playerPos = EntityHelper.getPosition(player);
+int teleported = ItemHelper.teleportItemEntitiesInRadius(world, playerPos, 10.0, playerPos);
+PlayerHelper.sendMessage(player, "Collected " + teleported + " items!");
+
+// Example: Clean up specific item types
+int removed = ItemHelper.removeItemEntitiesByItemId(world, "Ingredient_Bone_Fragment");
+WorldHelper.broadcast(world, "Cleaned up " + removed + " bone fragments");
 ```
 
 ## Links

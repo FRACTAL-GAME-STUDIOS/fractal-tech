@@ -72,6 +72,8 @@ ContainerHelper.onContainerChange(world, position, (transaction) -> {
 - Restores **player inventory slots** to their original state (via `otherContainer`)
 - Handles both `ItemStackSlotTransaction` (normal click) and `ItemStackTransaction` (shift-click)
 - Handles both `MOVE_FROM_SELF` (removing) and `MOVE_TO_SELF` (adding)
+- Handles `ListTransaction` (take all button) by recursively reverting all contained transactions
+- **Prevents item duplication** when dragging items outside the UI by automatically removing dropped item entities
 - Preserves item data (durability, metadata, etc.)
 - Uses `ThreadLocal` re-entry guard to prevent infinite loops
 - Works with all transaction types

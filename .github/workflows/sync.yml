@@ -79,13 +79,16 @@ jobs:
           rsync -a --delete --checksum "$TMP_DIR/$SRC_PATH" "$STAGE_DIR/$DEST_PATH"
           echo "${{ needs.check_upstream.outputs.latest_sha }}" > "$STAGE_DIR/$SHA_FILE"
 
-          find "$STAGE_DIR/$DEST_PATH" -type f -name '*.java' -print0 | xargs -0 -I{} bash -c '
-            f="$1"
+          find "$STAGE_DIR/$DEST_PATH" -type f -name '*.java' -print0 | while IFS= read -r -d '' f; do
             first="$(head -n 1 "$f" || true)"
             if [[ "$first" == "package org.hytaledevlib.lib;" ]]; then
-              sed -i "1s/^package org\.hytaledevlib\.lib;$/package com.fractalgs.utils.api;/" "$f"
+              sed -i '1s/^package org\.hytaledevlib\.lib;$/package com.fractalgs.utils.api;/' "$f"
             fi
-          ' _ {}
+          done
+
+          find "$STAGE_DIR/$DEST_PATH" -type f -name '*.java' -print0 | while IFS= read -r -d '' f; do
+            sed -i '2,$s/\borg\.hytaledevlib\.lib\./com.fractalgs.utils.api./g; 2,$s/\borg\.hytaledevlib\.lib\b/com.fractalgs.utils.api/g' "$f"
+          done
 
           rm -rf "$TMP_DIR"
 
@@ -95,6 +98,7 @@ jobs:
           path: |
             /tmp/sync-stage/src/main/java/com/fractalgs/utils/api
             /tmp/sync-stage/.github/upstream.sha
+  
 
   prepare_wiki:
     runs-on: ubuntu-latest

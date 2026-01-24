@@ -279,7 +279,7 @@ public class DeathHelper {
                     
                     if (entity != null) {
                         // Use EntityHelper to get the NPC role name
-                        return org.hytaledevlib.lib.EntityHelper.getEntityType(entity);
+                        return com.fractalgs.utils.api.EntityHelper.getEntityType(entity);
                     }
                 }
                 

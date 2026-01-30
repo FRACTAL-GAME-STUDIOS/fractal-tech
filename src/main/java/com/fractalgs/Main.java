@@ -1,8 +1,8 @@
 package com.fractalgs;
 
+import com.fractalgs.services.managers.LegsManager;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
-
 import javax.annotation.Nonnull;
 
 public class Main extends JavaPlugin {
@@ -13,6 +13,9 @@ public class Main extends JavaPlugin {
 
     @Override
     public void setup() {
-        // Plugin setup code goes here
+
+        LegsManager legsManager = new LegsManager();
+
+        legsManager.register(this);
     }
 }

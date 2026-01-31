@@ -18,11 +18,16 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
+import static com.fractalgs.services.managers.ChestManager.applyThorns;
+import static com.fractalgs.services.managers.ChestManager.isWearingChest;
 import static com.fractalgs.services.managers.LegsManager.isWearingLegs;
 
 public class NoDamageEvent extends EntityEventSystem<EntityStore, Damage> {
 
     private static final String FALL = "fall";
+    private static final String FIRE = "fire";
+    private static final String PHYSICAL = "physical";
+    private static final String PROJECTILE = "projectile";
 
     public NoDamageEvent() {
         super(Damage.class);
@@ -49,14 +54,29 @@ public class NoDamageEvent extends EntityEventSystem<EntityStore, Damage> {
 
         DamageCause cause = event.getCause();
 
-        if (Objects.nonNull(cause)
-                && FALL.equalsIgnoreCase(cause.getId())) {
+        if (Objects.nonNull(cause)) {
+
+            String causeId = cause.getId().toLowerCase();
 
             Player player = chunk.getComponent(index, Player.getComponentType());
 
-            if (Objects.nonNull(player)
-                    && isWearingLegs(player))
-                event.setCancelled(true);
+            if (Objects.nonNull(player)) {
+
+                if (causeId.contains(FALL)
+                        && isWearingLegs(player))
+                    event.setCancelled(true);
+
+                if (causeId.contains(FIRE)
+                        && isWearingChest(player))
+                    event.setCancelled(true);
+
+                if ((causeId.contains(PHYSICAL)
+                        || causeId.contains(PROJECTILE))
+                        && !event.isCancelled()
+                        && isWearingChest(player)) {
+                    applyThorns(event, player, commandBuffer);
+                }
+            }
         }
     }
 }

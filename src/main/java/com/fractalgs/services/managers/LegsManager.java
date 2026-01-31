@@ -1,6 +1,5 @@
 package com.fractalgs.services.managers;
 
-import com.fractalgs.services.events.NoDamageEvent;
 import com.fractalgs.utils.api.WorldHelper;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.logger.HytaleLogger;
@@ -14,9 +13,8 @@ import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
-import java.util.logging.Level;
-
 import java.util.Objects;
+import java.util.logging.Level;
 
 public class LegsManager {
 
@@ -28,16 +26,6 @@ public class LegsManager {
     private static final Float JUMP_MULTIPLIER = 1.5f;
 
     public void register(JavaPlugin plugin) {
-
-        try {
-
-            EntityStore.REGISTRY.registerSystem(new NoDamageEvent());
-
-        } catch (Exception e) {
-
-            LOGGER.at(Level.WARNING).log(e.getMessage());
-
-        }
 
         plugin.getEventRegistry().registerGlobal(AddPlayerToWorldEvent.class, event -> {
 

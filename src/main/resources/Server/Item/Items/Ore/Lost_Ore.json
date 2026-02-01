@@ -1,0 +1,52 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.lostore.name",
+    "Description": "server.items.lostore.description"
+  },
+  "Categories": [
+    "Blocks.Ores"
+  ],
+  "Recipe": {
+    "Input": [
+      {
+        "ResourceTypeId": "Salvage_Losttech",
+        "Quantity": 1
+      }
+    ],
+    "BenchRequirement": [
+      {
+        "Type": "Processing",
+        "Id": "Salvagebench"
+      }
+    ],
+    "TimeSeconds": 4
+  },
+  "Icon": "Icons/ItemsGenerated/Lost_Ore.png",
+  "Model": "Items/Blocks/lostore.blockymodel",
+  "Texture": "Items/Blocks/lostore_texture.png",
+  "ItemLevel": 10,
+  "PlayerAnimationsId": "Block",
+  "IconProperties": {
+    "Scale": 0.4,
+    "Rotation": [
+      22.5,
+      87,
+      22.5
+    ],
+    "Translation": [
+      -3.6,
+      -16.2
+    ]
+  },
+  "Tags": {
+    "Type": [
+      "Ore"
+    ]
+  },
+  "ItemEntity": {
+    "ParticleSystemId": null
+  },
+  "MaxStack": 25,
+  "ItemSoundSetId": "ISS_Blocks_Stone",
+  "DropOnDeath": true
+}

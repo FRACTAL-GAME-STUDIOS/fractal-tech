@@ -1,0 +1,63 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.oldgravity.name",
+    "Description": "server.items.oldgravity.description"
+  },
+  "Icon": "Icons/ItemsGenerated/Old_Gravityinverter.png",
+  "Parent": "Tool_Repair_Kit_Crude",
+  "ItemLevel": 1,
+  "Model": "Items/Tool/oldgravity.blockymodel",
+  "Texture": "Items/Tool/oldgravity_texture.png",
+  "Interactions": {
+    "Primary": {
+      "Interactions": []
+    },
+    "Secondary": {
+      "Interactions": []
+    }
+  },
+  "Recipe": {
+    "TimeSeconds": 1,
+    "Input": [
+      {
+        "ItemId": "Ingredient_Feathers_Light",
+        "Quantity": 2
+      },
+      {
+        "ItemId": "Ingredient_Bar_Adamantite",
+        "Quantity": 2
+      },
+      {
+        "ItemId": "Ingredient_Leather_Light",
+        "Quantity": 1
+      },
+      {
+        "ItemId": "Lost_Ingot",
+        "Quantity": 1
+      }
+    ],
+    "OutputQuantity": 1,
+    "BenchRequirement": [
+      {
+        "Type": "Crafting",
+        "Categories": [
+          "Lost_Others"
+        ],
+        "Id": "Bench_LostTechnology"
+      }
+    ]
+  },
+  "Quality": "Common",
+  "IconProperties": {
+    "Scale": 0.58823,
+    "Rotation": [
+      344,
+      177,
+      0
+    ],
+    "Translation": [
+      0,
+      -13.5
+    ]
+  }
+}

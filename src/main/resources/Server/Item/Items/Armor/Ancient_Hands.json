@@ -1,0 +1,104 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.ancienthands.name",
+    "Description": "server.items.ancienthands.description"
+  },
+  "Parent": "Armor_Iron_Hands",
+  "Quality": "Epic",
+  "ItemLevel": 45,
+  "Icon": "Icons/ItemsGenerated/Ancient_Hands.png",
+  "IconProperties": {
+    "Scale": 0.5,
+    "Rotation": [
+      21.94,
+      61,
+      20
+    ],
+    "Translation": [
+      0.7,
+      -2.3
+    ]
+  },
+  "Model": "Items/Armor/ancienthands.blockymodel",
+  "Texture": "Items/Armor/ancienthands_texture.png",
+  "Recipe": {
+    "Input": [
+      {
+        "ItemId": "Ingredient_Bar_Adamantite",
+        "Quantity": 15
+      },
+      {
+        "ItemId": "Ingredient_Leather_Heavy",
+        "Quantity": 4
+      },
+      {
+        "ItemId": "Ingredient_Fabric_Scrap_Cindercloth",
+        "Quantity": 3
+      },
+      {
+        "ItemId": "Ingredient_Fabric_Scrap_Shadoweave",
+        "Quantity": 6
+      },
+      {
+        "ItemId": "Lost_Ingot",
+        "Quantity": 10
+      }
+    ],
+    "BenchRequirement": [
+      {
+        "Id": "Bench_LostTechnology",
+        "Type": "Crafting",
+        "Categories": [
+          "Lost_Hands"
+        ]
+      }
+    ],
+    "KnowledgeRequired": false,
+    "TimeSeconds": 3
+  },
+  "Armor": {
+    "ArmorSlot": "Hands",
+    "BaseDamageResistance": 0,
+    "DamageResistance": {
+      "Physical": [
+        {
+          "Amount": 0.074,
+          "CalculationType": "Multiplicative"
+        }
+      ],
+      "Projectile": [
+        {
+          "Amount": 0.074,
+          "CalculationType": "Multiplicative"
+        }
+      ]
+    },
+    "StatModifiers": {
+      "Health": [
+        {
+          "Amount": 12,
+          "CalculationType": "Additive"
+        }
+      ]
+    },
+    "DamageClassEnhancement": {
+      "Light": [
+        {
+          "Amount": 0.04,
+          "CalculationType": "Multiplicative"
+        }
+      ]
+    }
+  },
+  "MaxDurability": 200,
+  "Tags": {
+    "Type": [
+      "Armor"
+    ],
+    "Family": [
+      "Adamantite"
+    ]
+  },
+  "ItemSoundSetId": "ISS_Armor_Heavy",
+  "DurabilityLossOnHit": 0.5
+}

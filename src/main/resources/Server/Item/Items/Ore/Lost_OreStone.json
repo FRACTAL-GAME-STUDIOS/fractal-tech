@@ -1,0 +1,67 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.lostorestone.name"
+  },
+  "Icon": "Icons/ItemsGenerated/Lost_OreStone.png",
+  "Categories": [
+    "Blocks.Ores"
+  ],
+  "BlockType": {
+    "Material": "Solid",
+    "DrawType": "CubeWithModel",
+    "CustomModel": "Items/Blocks/lostorestone.blockymodel",
+    "CustomModelTexture": [
+      {
+        "Texture": "Items/Blocks/lostore_texture.png",
+        "Weight": 1
+      }
+    ],
+    "Group": "Stone",
+    "Flags": {},
+    "RandomRotation": "YawStep90",
+    "Gathering": {
+      "Breaking": {
+        "GatherType": "OreIron",
+        "DropList": {
+          "Container": {
+            "Type": "Multiple",
+            "Containers": [
+              {
+                "Type": "Single",
+                "Item": {
+                  "ItemId": "Lost_Ore"
+                }
+              },
+              {
+                "Type": "Single",
+                "Item": {
+                  "ItemId": "Rock_Stone_Cobble"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "Textures": [
+      {
+        "Weight": 1,
+        "All": "Items/Blocks/lostorestone_texture.png"
+      }
+    ],
+    "BlockParticleSetId": "Ore",
+    "ParticleColor": "#d0d1c1",
+    "BlockSoundSetId": "Ore"
+  },
+  "PlayerAnimationsId": "Block",
+  "Tags": {
+    "Type": [
+      "Ore"
+    ],
+    "Family": [
+      "Iron"
+    ]
+  },
+  "MaxStack": 25,
+  "ItemSoundSetId": "ISS_Blocks_Stone"
+}

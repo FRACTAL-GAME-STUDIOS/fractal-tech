@@ -1,0 +1,104 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.lostlegs.name",
+    "Description": "server.items.lostlegs.description"
+  },
+  "Parent": "Armor_Bronze_Legs",
+  "Quality": "Uncommon",
+  "ItemLevel": 15,
+  "Icon": "Icons/ItemsGenerated/Lost_Legs.png",
+  "IconProperties": {
+    "Scale": 0.4,
+    "Rotation": [
+      20,
+      30,
+      8
+    ],
+    "Translation": [
+      -1,
+      -26
+    ]
+  },
+  "Model": "Items/Armor/lostlegs.blockymodel",
+  "Texture": "Items/Armor/lostlegs_texture.png",
+  "Recipe": {
+    "Input": [
+      {
+        "ItemId": "Ingredient_Bar_Iron",
+        "Quantity": 18
+      },
+      {
+        "ItemId": "Ingredient_Leather_Medium",
+        "Quantity": 6
+      },
+      {
+        "ItemId": "Ingredient_Fabric_Scrap_Linen",
+        "Quantity": 6
+      },
+      {
+        "ItemId": "Lost_Ingot",
+        "Quantity": 2
+      }
+    ],
+    "BenchRequirement": [
+      {
+        "Id": "Bench_LostTechnology",
+        "Type": "Crafting",
+        "Categories": [
+          "Lost_Legs"
+        ]
+      }
+    ],
+    "KnowledgeRequired": false,
+    "TimeSeconds": 3
+  },
+  "Armor": {
+    "ArmorSlot": "Legs",
+    "BaseDamageResistance": 0,
+    "CosmeticsToHide": [
+      "Pants",
+      "Shoes"
+    ],
+    "DamageResistance": {
+      "Physical": [
+        {
+          "Amount": 0.0504,
+          "CalculationType": "Multiplicative"
+        }
+      ],
+      "Projectile": [
+        {
+          "Amount": 0.0504,
+          "CalculationType": "Multiplicative"
+        }
+      ]
+    },
+    "StatModifiers": {
+      "Health": [
+        {
+          "Amount": 10,
+          "CalculationType": "Additive"
+        }
+      ]
+    },
+    "DamageClassEnhancement": {
+      "Signature": [
+        {
+          "Amount": 0.02,
+          "CalculationType": "Multiplicative"
+        }
+      ]
+    }
+  },
+  "MaxDurability": 100,
+  "Tags": {
+    "Type": [
+      "Armor"
+    ],
+    "Family": [
+      "Iron"
+    ]
+  },
+  "ItemSoundSetId": "ISS_Armor_Heavy",
+  "DurabilityLossOnHit": 0.5
+}

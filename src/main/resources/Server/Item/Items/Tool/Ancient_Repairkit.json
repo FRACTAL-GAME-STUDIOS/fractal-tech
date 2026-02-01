@@ -1,0 +1,79 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.ancientrepair.name",
+    "Description": "server.items.ancientrepair.description"
+  },
+  "Icon": "Icons/ItemsGenerated/Ancient_Repairkit.png",
+  "Parent": "Tool_Repair_Kit_Crude",
+  "ItemLevel": 1,
+  "Model": "Items/Tool/ancientrepair.blockymodel",
+  "Texture": "Items/Tool/ancientrepair_texture.png",
+  "Interactions": {
+    "Primary": {
+      "Interactions": [
+        {
+          "Type": "OpenCustomUI",
+          "Page": {
+            "Id": "ItemRepair",
+            "RepairPenalty": 0
+          }
+        }
+      ]
+    },
+    "Secondary": {
+      "Interactions": [
+        {
+          "Type": "OpenCustomUI",
+          "Page": {
+            "Id": "ItemRepair",
+            "RepairPenalty": 0
+          }
+        }
+      ]
+    }
+  },
+  "Recipe": {
+    "TimeSeconds": 1,
+    "Input": [
+      {
+        "ItemId": "Ingredient_Fabric_Scrap_Cindercloth",
+        "Quantity": 2
+      },
+      {
+        "ItemId": "Ingredient_Voidheart",
+        "Quantity": 1
+      },
+      {
+        "ItemId": "Ingredient_Crystal_Red",
+        "Quantity": 10
+      },
+      {
+        "ItemId": "Lost_Ingot",
+        "Quantity": 1
+      }
+    ],
+    "OutputQuantity": 1,
+    "BenchRequirement": [
+      {
+        "Type": "Crafting",
+        "Categories": [
+          "Lost_Others"
+        ],
+        "Id": "Bench_LostTechnology"
+      }
+    ]
+  },
+  "Quality": "Common",
+  "IconProperties": {
+    "Scale": 0.6,
+    "Rotation": [
+      330,
+      172,
+      0
+    ],
+    "Translation": [
+      0,
+      -13.5
+    ]
+  }
+}

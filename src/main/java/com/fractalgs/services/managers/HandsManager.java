@@ -50,7 +50,7 @@ public class HandsManager {
 
     private final Map<UUID, Integer> repairAccumulator = new ConcurrentHashMap<>();
 
-    private Boolean recipesScanned = false;
+    private boolean recipesScanned = false;
 
     private static final String[] REPAIR_BLACKLIST = {
             "Armor_Copper_Helmet",

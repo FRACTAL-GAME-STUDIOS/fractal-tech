@@ -22,8 +22,8 @@ public class LegsManager {
 
     private static final String LEGS_ID = "Armor_Copper_Legs";
 
-    private static final Float SPEED_MULTIPLIER = 2.0f;
-    private static final Float JUMP_MULTIPLIER = 1.5f;
+    private static final float SPEED_MULTIPLIER = 2.0f;
+    private static final float JUMP_MULTIPLIER = 1.5f;
 
     public void register(JavaPlugin plugin) {
 

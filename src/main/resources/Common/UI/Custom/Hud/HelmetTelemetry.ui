@@ -1,0 +1,56 @@
+// HelmetTelemetry UI
+$Common = "Common.ui";
+
+@Frame = PatchStyle(TexturePath: "helmet_frame.png");
+
+Group #HelmetTelemetryRoot {
+  Anchor: (Left: 0, Right: 0, Top: 0, Bottom: 0);
+
+  Group #FrameLayer {
+    Anchor: (Left: 0, Right: 0, Top: 0, Bottom: 0);
+    Background: @Frame;
+  }
+
+  // ===== BLOCK INFO (TOP LEFT) =====
+  Group #BlockInfoGroup {
+    Anchor: (Left: 40, Top: 78, Width: 520, Height: 120);
+  }
+
+  ItemIcon #BlockIcon {
+    Anchor: (Left: 0, Top: 0, Width: 64, Height: 64);
+    ItemId: "Empty";
+  }
+
+  Label #BlockName {
+    Anchor: (Left: 76, Top: 4, Width: 420, Height: 32);
+    Text: "";
+    Style: LabelStyle(FontSize: 22);
+  }
+
+  Label #Owner {
+    Anchor: (Left: 76, Top: 40, Width: 420, Height: 26);
+    Text: "";
+    Style: LabelStyle(FontSize: 16);
+  }
+
+  // ===== COORDS (TOP CENTER) =====
+  Label #Coords {
+    Anchor: (Left: 0, Right: 0, Top: 54, Height: 28);
+    Text: "";
+    Style: LabelStyle(FontSize: 20);
+  }
+
+  // ===== BIOME (TOP RIGHT - LEFT SLOT) =====
+  Label #Biome {
+    Anchor: (Right: 260, Top: 92, Width: 240, Height: 26);
+    Text: "";
+    Style: LabelStyle(FontSize: 18);
+  }
+
+  // ===== ZONE (TOP RIGHT - RIGHT SLOT) =====
+  Label #Zone {
+    Anchor: (Right: 40, Top: 92, Width: 200, Height: 26);
+    Text: "";
+    Style: LabelStyle(FontSize: 18);
+  }
+}

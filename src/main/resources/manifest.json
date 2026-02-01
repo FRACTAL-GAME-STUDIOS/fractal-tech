@@ -1,6 +1,6 @@
 {
   "Group": "com.fractalgs",
-  "Name": "",
+  "Name": "Steampunk",
   "Version": "1.0",
   "Description": "",
   "Authors": [
@@ -15,6 +15,6 @@
   "Dependencies": {},
   "OptionalDependencies": {},
   "DisabledByDefault": false,
-  "IncludesAssetPack": false,
+  "IncludesAssetPack": true,
   "Main": "com.fractalgs.Main"
 }

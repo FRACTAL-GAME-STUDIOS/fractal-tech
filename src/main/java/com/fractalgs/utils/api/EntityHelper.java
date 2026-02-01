@@ -1,13 +1,16 @@
 package com.fractalgs.utils.api;
 
+import com.hypixel.hytale.math.vector.Transform;
 import com.hypixel.hytale.math.vector.Vector3d;
 import com.hypixel.hytale.server.core.entity.Entity;
+import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.modules.entity.component.TransformComponent;
 import com.hypixel.hytale.server.core.universe.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Helper utilities for working with entities.
@@ -507,7 +510,7 @@ public class EntityHelper {
      * @param player The player entity
      * @return The player's respawn position as a Transform, or null if not available
      */
-    public static com.hypixel.hytale.math.vector.Transform getPlayerRespawnPosition(Entity player) {
+    public static CompletableFuture<Transform> getPlayerRespawnPosition(Entity player) {
         if (player == null || !isPlayer(player)) {
             return null;
         }
@@ -527,8 +530,8 @@ public class EntityHelper {
                 entityStore.getStore();
             
             // Call Player.getRespawnPosition() static method
-            com.hypixel.hytale.math.vector.Transform respawnTransform = 
-                com.hypixel.hytale.server.core.entity.entities.Player.getRespawnPosition(
+            CompletableFuture<Transform> respawnTransform =
+                Player.getRespawnPosition(
                     playerRef, 
                     worldName, 
                     store
@@ -550,9 +553,9 @@ public class EntityHelper {
      * @return The player's respawn position, or null if not available
      */
     public static com.hypixel.hytale.math.vector.Vector3d getPlayerHome(Entity player) {
-        com.hypixel.hytale.math.vector.Transform transform = getPlayerRespawnPosition(player);
+        CompletableFuture<Transform> transform = getPlayerRespawnPosition(player);
         if (transform != null) {
-            return transform.getPosition();
+            return transform.join().getPosition();
         }
         return null;
     }

@@ -1,63 +1,59 @@
 {
+  "Parent": "Potion_Template",
   "TranslationProperties": {
     "Name": "server.items.ancientgravity.name",
     "Description": "server.items.ancientgravity.description"
   },
   "Icon": "Icons/ItemsGenerated/Ancient_Gravityinverter.png",
-  "Parent": "Tool_Repair_Kit_Crude",
-  "ItemLevel": 1,
-  "Model": "Items/Tool/ancientgravity.blockymodel",
-  "Texture": "Items/Tool/ancientgravity_texture.png",
-  "Interactions": {
-    "Primary": {
-      "Interactions": []
+  "InteractionVars": {
+    "RemoveEffect": {
+      "Interactions": [
+        {
+          "Type": "Simple"
+        }
+      ]
     },
-    "Secondary": {
-      "Interactions": []
+    "Effect": {
+      "Interactions": [
+        {
+          "Type": "ApplyEffect",
+          "EffectId": {
+            "Duration": 60,
+            "StatModifiers": {
+              "Stamina": 0
+            },
+            "StatusEffectIcon": "UI/StatusEffects/Health_Potion.png",
+            "OverlapBehavior": "Extend"
+          }
+        }
+      ]
+    },
+    "Stat_Check": {
+      "Interactions": [
+        {
+          "Parent": "Stat_Check",
+          "Costs": {
+            "Stamina": 0
+          },
+          "ValueType": "Percent",
+          "LessThan": false
+        }
+      ]
     }
   },
-  "Recipe": {
-    "TimeSeconds": 1,
-    "Input": [
+  "BlockType": {
+    "CustomModel": "Items/Tool/ancientgravity.blockymodel",
+    "CustomModelTexture": [
       {
-        "ItemId": "Ingredient_Feathers_Light",
-        "Quantity": 2
-      },
-      {
-        "ItemId": "Ingredient_Bar_Gold",
-        "Quantity": 2
-      },
-      {
-        "ItemId": "Ingredient_Leather_Light",
-        "Quantity": 1
-      },
-      {
-        "ItemId": "Lost_Ingot",
-        "Quantity": 1
+        "Texture": "Items/Tool/ancientgravity_texture.png",
+        "Weight": 1
       }
     ],
-    "OutputQuantity": 1,
-    "BenchRequirement": [
-      {
-        "Type": "Crafting",
-        "Categories": [
-          "Lost_Others"
-        ],
-        "Id": "Bench_LostTechnology"
-      }
-    ]
+    "ParticleColor": "#f7972b",
+    "Light": {
+      "Color": "#532"
+    }
   },
-  "Quality": "Common",
-  "IconProperties": {
-    "Scale": 0.58823,
-    "Rotation": [
-      344,
-      177,
-      0
-    ],
-    "Translation": [
-      0,
-      -13.5
-    ]
-  }
+  "MaxStack": 10,
+  "DropOnDeath": true
 }

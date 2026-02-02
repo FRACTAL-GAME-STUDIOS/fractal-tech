@@ -1,6 +1,5 @@
 package com.fractalgs;
 
-import com.fractalgs.interactions.FoodEatenHookInteraction;
 import com.fractalgs.services.events.NoDamageEvent;
 import com.fractalgs.services.managers.*;
 import com.hypixel.hytale.logger.HytaleLogger;
@@ -36,8 +35,7 @@ public class Main extends JavaPlugin {
         this.oreGenerationManager = new OreGenerationManager();
         this.oreGenerationManager.register(this);
 
-        this.getCodecRegistry(Interaction.CODEC)
-                .register("fractal_food_eaten_hook", FoodEatenHookInteraction.class, FoodEatenHookInteraction.CODEC);
+        this.getCodecRegistry(Interaction.CODEC).register("fractal_interaction_hook", InteractionsManager.class, InteractionsManager.CODEC);
     }
 
     @Override

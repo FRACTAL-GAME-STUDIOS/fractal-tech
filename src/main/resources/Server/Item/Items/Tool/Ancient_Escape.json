@@ -1,10 +1,10 @@
 {
   "Parent": "Potion_Template",
   "TranslationProperties": {
-    "Name": "server.items.oldgravity.name",
-    "Description": "server.items.oldgravity.description"
+    "Name": "server.items.ancientescape.name",
+    "Description": "server.items.ancientescape.description"
   },
-  "Icon": "Icons/ItemsGenerated/Old_Gravityinverter.png",
+  "Icon": "Icons/ItemsGenerated/Ancient_Escape.png",
   "InteractionVars": {
     "RemoveEffect": {
       "Interactions": [
@@ -18,11 +18,11 @@
         {
           "Type": "ApplyEffect",
           "EffectId": {
-            "Duration": 30,
+            "Duration": 0.1,
             "StatModifiers": {
               "Stamina": 0
             },
-            "StatusEffectIcon": "Icons/fly.png",
+            "StatusEffectIcon": "Icons/no.png",
             "OverlapBehavior": "Extend"
           }
         }
@@ -42,10 +42,10 @@
     }
   },
   "BlockType": {
-    "CustomModel": "Items/Tool/oldgravity.blockymodel",
+    "CustomModel": "Items/Tool/ancientescape.blockymodel",
     "CustomModelTexture": [
       {
-        "Texture": "Items/Tool/oldgravity_texture.png",
+        "Texture": "Items/Tool/ancientescape_texture.png",
         "Weight": 1
       }
     ],
@@ -55,5 +55,17 @@
     }
   },
   "MaxStack": 10,
-  "DropOnDeath": true
+  "DropOnDeath": true,
+  "IconProperties": {
+    "Scale": 1.8,
+    "Rotation": [
+      11,
+      69,
+      30
+    ],
+    "Translation": [
+      -0.5,
+      -6
+    ]
+  }
 }

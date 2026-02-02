@@ -8,7 +8,7 @@ benchCategories.lostLegs = Legs
 benchCategories.lostOthers = Others
 
 items.losthead.name = Lost Technology Head
-items.losthead.description = Viewer that displays coordinates, biomes and blocks or entities.
+items.losthead.description = Allows you to breathe underwater.
 
 items.lostchest.name = Lost Technology Chest
 items.lostchest.description = Provides constant light.
@@ -20,10 +20,10 @@ items.lostlegs.name = Lost Technology Legs
 items.lostlegs.description = Increase movement speed.
 
 items.oldhead.name = Very old Technology Head
-items.oldhead.description = Viewer that displays coordinates, biome, and block.
+items.oldhead.description = You can breathe underwater, and it reflects 25% of projectile damage.
 
 items.oldchest.name = Very old Technology Chest
-items.oldchest.description = In addition to giving light, it returns 25% of the damage.
+items.oldchest.description = In addition to giving light, it reflects 25% of the physical damage.
 
 items.oldhands.name = Very old Technology Hands
 items.oldhands.description = Not only campfire cooking, but also forging.
@@ -32,13 +32,13 @@ items.oldlegs.name = Very old Technology Legs
 items.oldlegs.description = Improve your movement speed and negate fall damage.
 
 items.ancienthead.name = Ancient Technology Head
-items.ancienthead.description = In addition to the display, you can breathe underwater.
+items.ancienthead.description = You breathe underwater, reflect 25% of projectile damage, and are immune to poison.
 
 items.ancientchest.name = Ancient Technology Chest
-items.ancientchest.description = Provides light, you are immune to fire, and you return 25% of the damage.
+items.ancientchest.description = Provides light, you are immune to fire, and you reflects 25% of the physical damage.
 
 items.ancienthands.name = Ancient Technology Hands
-items.ancienthands.description = In addition to cooking, repair whatever you have on hand in exchange for durability.
+items.ancienthands.description = In addition to cooking, gradually repair whatever equipment you have on hand in exchange for durability.
 
 items.ancientlegs.name = Ancient Technology Legs
 items.ancientlegs.description = Cancels fall damage and allows you to run faster and jump higher.
@@ -57,5 +57,9 @@ items.ancientgravity.description = Use it to fly for 60 seconds.
 
 items.lostorestone.name = Lost Technology stone
 items.lostingot.name = Lost Technology ingot
+
 items.lostore.name = Lost Technology ore
 items.lostore.description = Lost Technology ore. Must be refined.
+
+items.ancientescape.description = Ancient Technology Escape button. You will be teleported in a random place.
+items.ancientescape.name = Ancient Technology Escape Button

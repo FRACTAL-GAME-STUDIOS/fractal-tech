@@ -173,7 +173,7 @@ public class ChestManager {
         return targetColor;
     }
 
-    public static void applyThorns(Damage originalEvent, Player victim, CommandBuffer<EntityStore> commandBuffer) {
+    public static void applyChestThorns(Damage originalEvent, Player victim, CommandBuffer<EntityStore> commandBuffer) {
 
         Damage.Source source = originalEvent.getSource();
 

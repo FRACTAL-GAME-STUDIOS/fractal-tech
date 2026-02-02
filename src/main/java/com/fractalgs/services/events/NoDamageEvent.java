@@ -18,8 +18,9 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
-import static com.fractalgs.services.managers.ChestManager.applyThorns;
-import static com.fractalgs.services.managers.ChestManager.isWearingChest;
+import static com.fractalgs.services.managers.ChestManager.*;
+import static com.fractalgs.services.managers.HeadManager.applyHeadThorns;
+import static com.fractalgs.services.managers.HeadManager.isWearingHead;
 import static com.fractalgs.services.managers.LegsManager.isWearingLegs;
 
 public class NoDamageEvent extends EntityEventSystem<EntityStore, Damage> {
@@ -28,6 +29,8 @@ public class NoDamageEvent extends EntityEventSystem<EntityStore, Damage> {
     private static final String FIRE = "fire";
     private static final String PHYSICAL = "physical";
     private static final String PROJECTILE = "projectile";
+    private static final String DROWNING = "drowning";
+    private static final String POISON = "poison";
 
     public NoDamageEvent() {
         super(Damage.class);
@@ -70,11 +73,20 @@ public class NoDamageEvent extends EntityEventSystem<EntityStore, Damage> {
                         && isWearingChest(player))
                     event.setCancelled(true);
 
-                if ((causeId.contains(PHYSICAL)
-                        || causeId.contains(PROJECTILE))
-                        && !event.isCancelled()
-                        && isWearingChest(player)) {
-                    applyThorns(event, player, commandBuffer);
+                if ((causeId.contains(DROWNING) || causeId.contains(POISON))
+                        && isWearingHead(player))
+                    event.setCancelled(true);
+
+                if (!event.isCancelled()) {
+
+                    if (causeId.contains(PHYSICAL)
+                            && isWearingChest(player))
+                        applyChestThorns(event, player, commandBuffer);
+
+                    if (causeId.contains(PROJECTILE)
+                            && isWearingHead(player))
+                        applyHeadThorns(event, player, commandBuffer);
+
                 }
             }
         }

@@ -53,7 +53,7 @@ public class HandsManager {
     private boolean recipesScanned = false;
 
     private static final String[] REPAIR_BLACKLIST = {
-            "Armor_Copper_Helmet",
+            "Armor_Copper_Head",
             "Armor_Copper_Chest",
             "Armor_Copper_Legs",
             "Armor_Copper_Hands"

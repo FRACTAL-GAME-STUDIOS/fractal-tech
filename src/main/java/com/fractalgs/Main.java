@@ -1,6 +1,5 @@
 package com.fractalgs;
 
-import com.fractalgs.services.events.LookAtBlockService;
 import com.fractalgs.services.events.NoDamageEvent;
 import com.fractalgs.services.managers.*;
 import com.hypixel.hytale.logger.HytaleLogger;
@@ -27,10 +26,7 @@ public class Main extends JavaPlugin {
 
         registerEvents();
 
-        LookAtBlockService lookService = new LookAtBlockService(5.0);
-        lookService.register(this);
-
-        new HelmetManager(lookService).register(this);
+        new HeadManager().register(this);
         new ChestManager().register(this);
         new LegsManager().register(this);
         new HandsManager().register(this);

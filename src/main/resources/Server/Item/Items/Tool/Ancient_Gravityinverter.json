@@ -22,7 +22,7 @@
             "StatModifiers": {
               "Stamina": 0
             },
-            "StatusEffectIcon": "UI/StatusEffects/Health_Potion.png",
+            "StatusEffectIcon": "Icons/fly.png",
             "OverlapBehavior": "Extend"
           }
         }

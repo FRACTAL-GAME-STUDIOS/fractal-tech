@@ -3,6 +3,7 @@ package com.fractalgs.services.events;
 import com.fractalgs.services.managers.ChestManager;
 import com.fractalgs.services.managers.HeadManager;
 import com.fractalgs.services.managers.LegsManager;
+import com.fractalgs.utils.ArmorUtils;
 import com.hypixel.hytale.component.ArchetypeChunk;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Store;
@@ -87,11 +88,11 @@ public class NoDamageEvent extends EntityEventSystem<EntityStore, Damage> {
 
                     if (causeId.contains(PHYSICAL)
                             && chestTier >= 2)
-                        ChestManager.applyChestThorns(event, player, commandBuffer);
+                        ArmorUtils.applyThorns(event, player, commandBuffer, chestTier);
 
                     if (causeId.contains(PROJECTILE)
                             && headTier >= 2)
-                        HeadManager.applyHeadThorns(event, player, commandBuffer);
+                        ArmorUtils.applyThorns(event, player, commandBuffer, headTier);
 
                 }
             }

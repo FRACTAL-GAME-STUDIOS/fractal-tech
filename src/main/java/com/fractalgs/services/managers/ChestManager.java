@@ -1,7 +1,6 @@
 package com.fractalgs.services.managers;
 
 import com.fractalgs.utils.api.WorldHelper;
-import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
@@ -14,8 +13,6 @@ import com.hypixel.hytale.server.core.inventory.ItemStack;
 import com.hypixel.hytale.server.core.inventory.container.ItemContainer;
 import com.hypixel.hytale.server.core.modules.entity.component.DynamicLight;
 import com.hypixel.hytale.server.core.modules.entity.component.PersistentDynamicLight;
-import com.hypixel.hytale.server.core.modules.entity.damage.Damage;
-import com.hypixel.hytale.server.core.modules.entity.damage.DamageSystems;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
@@ -170,37 +167,6 @@ public class ChestManager {
         }
 
         return targetColor;
-    }
-
-    public static void applyChestThorns(Damage originalEvent, Player victim, CommandBuffer<EntityStore> commandBuffer) {
-
-        if (getEquippedTier(victim) < 2)
-            return;
-
-        Damage.Source source = originalEvent.getSource();
-
-        if (source instanceof Damage.EntitySource entitySource) {
-
-            Ref<EntityStore> attackerRef = entitySource.getRef();
-
-            if (attackerRef.isValid()) {
-
-                if (Objects.equals(attackerRef, victim.getReference()))
-                    return;
-
-                float reflectedAmount = originalEvent.getAmount() * 0.25f;
-
-                if (reflectedAmount < 0.5f)
-                    return;
-
-                Damage.EntitySource thornsSource = new Damage.EntitySource(
-                        Objects.requireNonNull(victim.getReference()));
-
-                Damage thornsDamage = new Damage(thornsSource, originalEvent.getDamageCauseIndex(), reflectedAmount);
-
-                DamageSystems.executeDamage(attackerRef, commandBuffer, thornsDamage);
-            }
-        }
     }
 
     public static int getEquippedTier(Player player) {

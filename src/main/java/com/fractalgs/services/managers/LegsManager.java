@@ -1,5 +1,6 @@
 package com.fractalgs.services.managers;
 
+import com.fractalgs.utils.ArmorUtils;
 import com.fractalgs.utils.api.WorldHelper;
 import com.hypixel.hytale.component.Holder;
 import com.hypixel.hytale.logger.HytaleLogger;
@@ -73,50 +74,40 @@ public class LegsManager {
 
     private void applyPhysics(Player player, int tier) {
 
-        MovementManager movement = getMovementManager(player);
+        MovementManager movement = ArmorUtils.getMovementManager(player);
 
         if (Objects.nonNull(movement)) {
 
             movement.applyDefaultSettings();
 
-            MovementSettings settings = movement.getSettings();
-            settings.maxSpeedMultiplier *= SPEED_MULTIPLIER;
-            settings.forwardSprintSpeedMultiplier *= SPEED_MULTIPLIER;
-
-            if (tier >= 3)
-                settings.jumpForce *= JUMP_MULTIPLIER;
+            applyStatsToSettings(movement.getSettings(), tier);
 
             movement.update(player.getPlayerConnection());
         }
+    }
+
+    public static void applyStatsToSettings(MovementSettings settings, int tier) {
+
+        if (tier >= 1) {
+
+            settings.maxSpeedMultiplier *= SPEED_MULTIPLIER;
+            settings.forwardSprintSpeedMultiplier *= SPEED_MULTIPLIER;
+
+        }
+
+        if (tier >= 3)
+            settings.jumpForce *= JUMP_MULTIPLIER;
     }
 
     private void resetPhysics(Player player) {
 
-        MovementManager movement = getMovementManager(player);
+        MovementManager movement = ArmorUtils.getMovementManager(player);
 
         if (Objects.nonNull(movement)) {
 
             movement.applyDefaultSettings();
 
             movement.update(player.getPlayerConnection());
-        }
-    }
-
-    private MovementManager getMovementManager(Player player) {
-
-        try {
-
-            if (Objects.isNull(player.getWorld()))
-                return null;
-
-            return player.getWorld().getEntityStore().getStore().getComponent(
-                    Objects.requireNonNull(player.getReference()), MovementManager.getComponentType());
-
-        } catch (Exception e) {
-
-            LOGGER.at(Level.WARNING).log(e.getMessage());
-
-            return null;
         }
     }
 

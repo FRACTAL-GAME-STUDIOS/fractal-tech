@@ -1,5 +1,8 @@
 package com.fractalgs.services.events;
 
+import com.fractalgs.services.managers.ChestManager;
+import com.fractalgs.services.managers.HeadManager;
+import com.fractalgs.services.managers.LegsManager;
 import com.hypixel.hytale.component.ArchetypeChunk;
 import com.hypixel.hytale.component.CommandBuffer;
 import com.hypixel.hytale.component.Store;
@@ -17,11 +20,6 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-
-import static com.fractalgs.services.managers.ChestManager.*;
-import static com.fractalgs.services.managers.HeadManager.applyHeadThorns;
-import static com.fractalgs.services.managers.HeadManager.isWearingHead;
-import static com.fractalgs.services.managers.LegsManager.isWearingLegs;
 
 public class NoDamageEvent extends EntityEventSystem<EntityStore, Damage> {
 
@@ -65,27 +63,35 @@ public class NoDamageEvent extends EntityEventSystem<EntityStore, Damage> {
 
             if (Objects.nonNull(player)) {
 
+                int chestTier = ChestManager.getEquippedTier(player);
+                int headTier = HeadManager.getEquippedTier(player);
+                int legsTier = LegsManager.getEquippedTier(player);
+
                 if (causeId.contains(FALL)
-                        && isWearingLegs(player))
+                        && legsTier >= 2)
                     event.setCancelled(true);
 
                 if (causeId.contains(FIRE)
-                        && isWearingChest(player))
+                        && chestTier >= 3)
                     event.setCancelled(true);
 
-                if ((causeId.contains(DROWNING) || causeId.contains(POISON))
-                        && isWearingHead(player))
+                if (causeId.contains(DROWNING)
+                        && headTier >= 1)
+                    event.setCancelled(true);
+
+                if (causeId.contains(POISON)
+                        && headTier >= 3)
                     event.setCancelled(true);
 
                 if (!event.isCancelled()) {
 
                     if (causeId.contains(PHYSICAL)
-                            && isWearingChest(player))
-                        applyChestThorns(event, player, commandBuffer);
+                            && chestTier >= 2)
+                        ChestManager.applyChestThorns(event, player, commandBuffer);
 
                     if (causeId.contains(PROJECTILE)
-                            && isWearingHead(player))
-                        applyHeadThorns(event, player, commandBuffer);
+                            && headTier >= 2)
+                        HeadManager.applyHeadThorns(event, player, commandBuffer);
 
                 }
             }

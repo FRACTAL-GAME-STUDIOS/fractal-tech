@@ -34,11 +34,13 @@ public class HandsManager {
 
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
 
-    private static final String HANDS_ID = "Armor_Copper_Hands";
+    private static final String HANDS_ID_TIER_1 = "Lost_Hands";
+    private static final String HANDS_ID_TIER_2 = "Old_Hands";
+    private static final String HANDS_ID_TIER_3 = "Ancient_Hands";
 
     private static final Integer SMELT_TIME_TICKS = 140;
 
-    private record ThermalRecipe(String outputId, Integer inputQty, Integer outputQty) {}
+    private record ThermalRecipe(String outputId, Integer inputQty, Integer outputQty, boolean isCampfire) {}
 
     private final Map<String, ThermalRecipe> recipeIds = new HashMap<>();
     private final Map<Integer, ThermalRecipe> recipeTags = new HashMap<>();
@@ -53,10 +55,9 @@ public class HandsManager {
     private boolean recipesScanned = false;
 
     private static final String[] REPAIR_BLACKLIST = {
-            "Armor_Copper_Head",
-            "Armor_Copper_Chest",
-            "Armor_Copper_Legs",
-            "Armor_Copper_Hands"
+            "Lost_Head", "Lost_Chest", "Lost_Legs", "Lost_Hands",
+            "Old_Head", "Old_Chest", "Old_Legs", "Old_Hands",
+            "Ancient_Head", "Ancient_Chest", "Ancient_Legs", "Ancient_Hands",
     };
 
     public void register(JavaPlugin plugin) {
@@ -90,7 +91,10 @@ public class HandsManager {
 
     private void startLoopSafe(Player player) {
 
-        if (!activeSmeltLoops.getOrDefault(player.getUuid(), false)) {
+        int tier = getEquippedTier(player);
+
+        if (tier >= 1
+                && !activeSmeltLoops.getOrDefault(player.getUuid(), false)) {
 
             activeSmeltLoops.put(player.getUuid(), true);
 
@@ -98,7 +102,8 @@ public class HandsManager {
 
         }
 
-        if (!activeRepairLoops.getOrDefault(player.getUuid(), false)) {
+        if (tier >= 3
+                && !activeRepairLoops.getOrDefault(player.getUuid(), false)) {
 
             activeRepairLoops.put(player.getUuid(), true);
 
@@ -119,9 +124,11 @@ public class HandsManager {
                 return;
             }
 
-            if (isWearingHands(player)) {
+            int tier = getEquippedTier(player);
 
-                processSmeltingTick(player);
+            if (tier >= 1) {
+
+                processSmeltingTick(player, tier);
 
                 WorldHelper.waitTicks(player.getWorld(), 5, () -> smeltingLoop(player));
 
@@ -154,7 +161,7 @@ public class HandsManager {
                 return;
             }
 
-            if (isWearingHands(player)) {
+            if (getEquippedTier(player) >= 3) {
 
                 boolean repaired = repairItemInHand(player);
 
@@ -191,7 +198,7 @@ public class HandsManager {
         }
     }
 
-    private void processSmeltingTick(Player player) {
+    private void processSmeltingTick(Player player, int tier) {
 
         ItemStack heldItem = player.getInventory().getItemInHand();
 
@@ -208,6 +215,14 @@ public class HandsManager {
         ThermalRecipe recipe = findRecipe(inputId);
 
         if (Objects.nonNull(recipe)) {
+
+            if (tier == 1
+                    && !recipe.isCampfire()) {
+
+                playerProgress.remove(player.getUuid());
+
+                return;
+            }
 
             SmeltProgress progress = playerProgress.computeIfAbsent(player.getUuid(), k ->
                     new SmeltProgress());
@@ -346,6 +361,8 @@ public class HandsManager {
                 if (!isThermalBench(recipe))
                     continue;
 
+                boolean isCampfire = isCampfireRecipe(recipe);
+
                 MaterialQuantity inputMQ = recipe.getInput()[0];
                 MaterialQuantity outputMQ = recipe.getPrimaryOutput();
 
@@ -354,7 +371,7 @@ public class HandsManager {
                 if (Objects.isNull(outId))
                     continue;
 
-                ThermalRecipe thermalData = new ThermalRecipe(outId, inputMQ.getQuantity(), outputMQ.getQuantity());
+                ThermalRecipe thermalData = new ThermalRecipe(outId, inputMQ.getQuantity(), outputMQ.getQuantity(), isCampfire);
 
                 String inId = inputMQ.getItemId();
 
@@ -440,6 +457,32 @@ public class HandsManager {
         return false;
     }
 
+    private boolean isCampfireRecipe(CraftingRecipe recipe) {
+
+        BenchRequirement[] reqs = recipe.getBenchRequirement();
+
+        if (Objects.isNull(reqs))
+            return false;
+
+        for (BenchRequirement req : reqs) {
+
+            if (Objects.nonNull(req.id)
+                    && req.id.toLowerCase().contains("campfire"))
+                return true;
+
+            if (Objects.nonNull(req.categories)) {
+
+                for (String cat : req.categories) {
+                    if (cat.toLowerCase().contains("cooking"))
+                        return true;
+                }
+
+            }
+        }
+
+        return false;
+    }
+
     private boolean repairItemInHand(Player player) {
 
         Inventory inventory = player.getInventory();
@@ -483,27 +526,34 @@ public class HandsManager {
 
             ItemStack stack = armor.getItemStack((short) i);
 
-            if (Objects.nonNull(stack)
-                    && HANDS_ID.equals(stack.getItemId())) {
+            if (Objects.nonNull(stack)) {
 
-                ItemStack damaged = stack.withIncreasedDurability(-1.0);
+                String id = stack.getItemId();
 
-                armor.replaceItemStackInSlot((short) i, stack, damaged);
+                if (HANDS_ID_TIER_1.equals(id)
+                        || HANDS_ID_TIER_2.equals(id)
+                        || HANDS_ID_TIER_3.equals(id)) {
 
-                player.sendInventory();
+                    ItemStack damaged = stack.withIncreasedDurability(-1.0);
 
-                return;
+                    armor.replaceItemStackInSlot((short) i, stack, damaged);
+
+                    player.sendInventory();
+
+                    return;
+                }
+
             }
         }
     }
 
-    public static boolean isWearingHands(Player player) {
+    private int getEquippedTier(Player player) {
 
         try {
 
             if (Objects.isNull(player.getInventory())
                     || Objects.isNull(player.getInventory().getArmor()))
-                return false;
+                return 0;
 
             ItemContainer armor = player.getInventory().getArmor();
 
@@ -511,17 +561,31 @@ public class HandsManager {
 
                 ItemStack stack = armor.getItemStack((short) i);
 
-                if (Objects.nonNull(stack)
-                        && HANDS_ID.equals(stack.getItemId()))
-                    return true;
+                if (Objects.nonNull(stack)) {
+
+                    String id = stack.getItemId();
+
+                    switch (id) {
+                        case HANDS_ID_TIER_3 -> {
+                            return 3;
+                        }
+                        case HANDS_ID_TIER_2 -> {
+                            return 2;
+                        }
+                        case HANDS_ID_TIER_1 -> {
+                            return 1;
+                        }
+                    }
+
+                }
             }
 
         } catch (Exception e) {
 
-            LOGGER.at(Level.WARNING).log(e.getMessage());
+            return 0;
 
         }
 
-        return false;
+        return 0;
     }
 }

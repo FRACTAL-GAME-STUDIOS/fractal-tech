@@ -26,7 +26,9 @@ public class ChestManager {
 
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
 
-    private static final String CHEST_ID = "Armor_Copper_Chest";
+    private static final String CHEST_ID_TIER_1 = "Lost_Chest";
+    private static final String CHEST_ID_TIER_2 = "Old_Chest";
+    private static final String CHEST_ID_TIER_3 = "Ancient_Chest";
 
     public void register(JavaPlugin plugin) {
 
@@ -56,7 +58,9 @@ public class ChestManager {
 
         try {
 
-            if (isWearingChest(player)) {
+            int tier = getEquippedTier(player);
+
+            if (tier >= 1) {
 
                 applyLighting(player);
 
@@ -83,9 +87,7 @@ public class ChestManager {
             Store<EntityStore> store = player.getWorld().getEntityStore().getStore();
             Ref<EntityStore> ref = player.getReference();
 
-            boolean isWearing = isWearingChest(player);
-
-            ColorLight targetColor = getColorLight(isWearing);
+            ColorLight targetColor = getColorLight(true);
 
             assert ref != null;
             PersistentDynamicLight currentLightComp = (store.getComponent(ref, PersistentDynamicLight.getComponentType()));
@@ -96,9 +98,6 @@ public class ChestManager {
 
             if (Objects.nonNull(currentLightComp)
                     && Objects.equals(currentColor, targetColor))
-                return;
-
-            if (Objects.isNull(currentLightComp) && !isWearing)
                 return;
 
             PersistentDynamicLight newLightComp = new PersistentDynamicLight(targetColor);
@@ -175,6 +174,9 @@ public class ChestManager {
 
     public static void applyChestThorns(Damage originalEvent, Player victim, CommandBuffer<EntityStore> commandBuffer) {
 
+        if (getEquippedTier(victim) < 2)
+            return;
+
         Damage.Source source = originalEvent.getSource();
 
         if (source instanceof Damage.EntitySource entitySource) {
@@ -201,13 +203,13 @@ public class ChestManager {
         }
     }
 
-    public static boolean isWearingChest(Player player) {
+    public static int getEquippedTier(Player player) {
 
         try {
 
             if (Objects.isNull(player.getInventory())
                     || Objects.isNull(player.getInventory().getArmor()))
-                return false;
+                return 0;
 
             ItemContainer armor = player.getInventory().getArmor();
 
@@ -215,18 +217,31 @@ public class ChestManager {
 
                 ItemStack stack = armor.getItemStack((short) i);
 
-                if (Objects.nonNull(stack)
-                        && CHEST_ID.equals(stack.getItemId()))
-                    return true;
+                if (Objects.nonNull(stack)) {
+
+                    String id = stack.getItemId();
+
+                    switch (id) {
+                        case CHEST_ID_TIER_3 -> {
+                            return 3;
+                        }
+                        case CHEST_ID_TIER_2 -> {
+                            return 2;
+                        }
+                        case CHEST_ID_TIER_1 -> {
+                            return 1;
+                        }
+                    }
+
+                }
             }
 
         } catch (Exception e) {
 
-            LOGGER.at(Level.WARNING).log(e.getMessage());
+            return 0;
 
-            return false;
         }
 
-        return false;
+        return 0;
     }
 }

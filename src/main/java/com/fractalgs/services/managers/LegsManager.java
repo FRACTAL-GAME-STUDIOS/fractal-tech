@@ -20,7 +20,9 @@ public class LegsManager {
 
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
 
-    private static final String LEGS_ID = "Armor_Copper_Legs";
+    private static final String LEGS_ID_TIER_1 = "Lost_Legs";
+    private static final String LEGS_ID_TIER_2 = "Old_Legs";
+    private static final String LEGS_ID_TIER_3 = "Ancient_Legs";
 
     private static final float SPEED_MULTIPLIER = 2.0f;
     private static final float JUMP_MULTIPLIER = 1.5f;
@@ -50,9 +52,11 @@ public class LegsManager {
 
         try {
 
-            if (isWearingLegs(player)) {
+            int tier = getEquippedTier(player);
 
-                applyPhysics(player);
+            if (tier >= 1) {
+
+                applyPhysics(player, tier);
 
             } else {
 
@@ -67,21 +71,20 @@ public class LegsManager {
         }
     }
 
-    private void applyPhysics(Player player) {
+    private void applyPhysics(Player player, int tier) {
 
         MovementManager movement = getMovementManager(player);
 
         if (Objects.nonNull(movement)) {
-
-            if (movement.getSettings().forwardSprintSpeedMultiplier >= (SPEED_MULTIPLIER - 0.1f))
-                return;
 
             movement.applyDefaultSettings();
 
             MovementSettings settings = movement.getSettings();
             settings.maxSpeedMultiplier *= SPEED_MULTIPLIER;
             settings.forwardSprintSpeedMultiplier *= SPEED_MULTIPLIER;
-            settings.jumpForce *= JUMP_MULTIPLIER;
+
+            if (tier >= 3)
+                settings.jumpForce *= JUMP_MULTIPLIER;
 
             movement.update(player.getPlayerConnection());
         }
@@ -117,13 +120,13 @@ public class LegsManager {
         }
     }
 
-    public static boolean isWearingLegs(Player player) {
+    public static int getEquippedTier(Player player) {
 
         try {
 
             if (Objects.isNull(player.getInventory())
                     || Objects.isNull(player.getInventory().getArmor()))
-                return false;
+                return 0;
 
             ItemContainer armor = player.getInventory().getArmor();
 
@@ -131,18 +134,31 @@ public class LegsManager {
 
                 ItemStack stack = armor.getItemStack((short) i);
 
-                if (Objects.nonNull(stack)
-                        && LEGS_ID.equals(stack.getItemId()))
-                    return true;
+                if (Objects.nonNull(stack)) {
+
+                    String id = stack.getItemId();
+
+                    switch (id) {
+                        case LEGS_ID_TIER_3 -> {
+                            return 3;
+                        }
+                        case LEGS_ID_TIER_2 -> {
+                            return 2;
+                        }
+                        case LEGS_ID_TIER_1 -> {
+                            return 1;
+                        }
+                    }
+
+                }
             }
 
         } catch (Exception e) {
 
-            LOGGER.at(Level.WARNING).log(e.getMessage());
+            return 0;
 
-            return false;
         }
 
-        return false;
+        return 0;
     }
 }

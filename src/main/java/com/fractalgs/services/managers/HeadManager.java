@@ -12,17 +12,21 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 import java.util.Objects;
-import java.util.logging.Level;
 
 public class HeadManager {
 
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
 
-    private static final String HEAD_ID = "Armor_Copper_Head";
+    private static final String HEAD_ID_TIER_1 = "Lost_Head";
+    private static final String HEAD_ID_TIER_2 = "Old_Head";
+    private static final String HEAD_ID_TIER_3 = "Ancient_Head";
 
     public void register(JavaPlugin plugin) {}
 
     public static void applyHeadThorns(Damage originalEvent, Player victim, CommandBuffer<EntityStore> commandBuffer) {
+
+        if (getEquippedTier(victim) < 2)
+            return;
 
         Damage.Source source = originalEvent.getSource();
 
@@ -50,13 +54,13 @@ public class HeadManager {
         }
     }
 
-    public static boolean isWearingHead(Player player) {
+    public static int getEquippedTier(Player player) {
 
         try {
 
             if (Objects.isNull(player.getInventory())
                     || Objects.isNull(player.getInventory().getArmor()))
-                return false;
+                return 0;
 
             ItemContainer armor = player.getInventory().getArmor();
 
@@ -64,18 +68,31 @@ public class HeadManager {
 
                 ItemStack stack = armor.getItemStack((short) i);
 
-                if (Objects.nonNull(stack)
-                        && HEAD_ID.equals(stack.getItemId()))
-                    return true;
+                if (Objects.nonNull(stack)) {
+
+                    String id = stack.getItemId();
+
+                    switch (id) {
+                        case HEAD_ID_TIER_3 -> {
+                            return 3;
+                        }
+                        case HEAD_ID_TIER_2 -> {
+                            return 2;
+                        }
+                        case HEAD_ID_TIER_1 -> {
+                            return 1;
+                        }
+                    }
+
+                }
             }
 
         } catch (Exception e) {
 
-            LOGGER.at(Level.WARNING).log(e.getMessage());
+            return 0;
 
-            return false;
         }
 
-        return false;
+        return 0;
     }
 }

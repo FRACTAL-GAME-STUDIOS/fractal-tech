@@ -1,8 +1,10 @@
 package com.fractalgs;
 
+import com.fractalgs.interactions.FoodEatenHookInteraction;
 import com.fractalgs.services.events.NoDamageEvent;
 import com.fractalgs.services.managers.*;
 import com.hypixel.hytale.logger.HytaleLogger;
+import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -33,6 +35,9 @@ public class Main extends JavaPlugin {
 
         this.oreGenerationManager = new OreGenerationManager();
         this.oreGenerationManager.register(this);
+
+        this.getCodecRegistry(Interaction.CODEC)
+                .register("fractal_food_eaten_hook", FoodEatenHookInteraction.class, FoodEatenHookInteraction.CODEC);
     }
 
     @Override

@@ -6,25 +6,21 @@
   },
   "Icon": "Icons/ItemsGenerated/Old_Gravityinverter.png",
   "InteractionVars": {
-    "RemoveEffect": {
-      "Interactions": [
-        {
-          "Type": "Simple"
-        }
-      ]
-    },
     "Effect": {
       "Interactions": [
         {
           "Type": "ApplyEffect",
           "EffectId": {
-            "Duration": 30,
+            "Duration": 0,
             "StatModifiers": {
               "Stamina": 0
             },
             "StatusEffectIcon": "Icons/fly.png",
             "OverlapBehavior": "Extend"
           }
+        },
+        {
+          "Type": "fractal_interaction_hook"
         }
       ]
     },

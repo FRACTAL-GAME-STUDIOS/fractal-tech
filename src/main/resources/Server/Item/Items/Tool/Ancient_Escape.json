@@ -6,25 +6,21 @@
   },
   "Icon": "Icons/ItemsGenerated/Ancient_Escape.png",
   "InteractionVars": {
-    "RemoveEffect": {
-      "Interactions": [
-        {
-          "Type": "Simple"
-        }
-      ]
-    },
     "Effect": {
       "Interactions": [
         {
           "Type": "ApplyEffect",
           "EffectId": {
-            "Duration": 0.1,
+            "Duration": 0,
             "StatModifiers": {
               "Stamina": 0
             },
             "StatusEffectIcon": "Icons/no.png",
             "OverlapBehavior": "Extend"
           }
+        },
+        {
+          "Type": "fractal_interaction_hook"
         }
       ]
     },

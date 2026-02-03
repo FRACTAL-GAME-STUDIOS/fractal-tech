@@ -1,0 +1,87 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.lostinfiniteknife.name",
+    "Description": "server.items.lostinfiniteknife.description"
+  },
+  "Categories": [
+    "Items.Weapons"
+  ],
+  "Icon": "Icons/ItemsGenerated/Lost_InfiniteKnife.png",
+  "IconProperties": {
+    "Scale": 0.6,
+    "Rotation": [
+      321,
+      313,
+      0
+    ],
+    "Translation": [
+      -17,
+      -25
+    ]
+  },
+  "Quality": "Uncommon",
+  "ItemLevel": 40,
+  "Model": "Items/Tool/lostinfiniteknife.blockymodel",
+  "Texture": "Items/Tool/lostinfiniteknife_texture.png",
+  "PlayerAnimationsId": "Throwing_Knife",
+  "Utility": {
+    "Usable": true
+  },
+  "Weapon": {},
+  "Recipe": {
+    "TimeSeconds": 1,
+    "Input": [
+      {
+        "ItemId": "Ingredient_Fabric_Scrap_Linen",
+        "Quantity": 10
+      },
+      {
+        "ItemId": "Ingredient_Bar_Cobalt",
+        "Quantity": 10
+      },
+      {
+        "ItemId": "Ingredient_Bar_Thorium",
+        "Quantity": 10
+      },
+      {
+        "ItemId": "Lost_Ingot",
+        "Quantity": 6
+      }
+    ],
+    "OutputQuantity": 1,
+    "BenchRequirement": [
+      {
+        "Type": "Crafting",
+        "Categories": [
+          "Lost_Others"
+        ],
+        "Id": "Bench_LostTechnology"
+      }
+    ]
+  },
+  "Interactions": {
+    "Secondary": {
+      "Interactions": [
+        "Kunai_Throw"
+      ],
+      "Cooldown": {
+        "Cooldown": 0.25,
+        "Charges": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "InterruptRecharge": true,
+        "ClickBypass": false
+      }
+    }
+  },
+  "Tags": {
+    "Type": [
+      "Weapon"
+    ]
+  }
+}

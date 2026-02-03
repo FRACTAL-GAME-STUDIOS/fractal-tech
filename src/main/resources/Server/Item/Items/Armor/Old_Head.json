@@ -10,13 +10,13 @@
   "IconProperties": {
     "Scale": 0.45,
     "Rotation": [
-      23.06,
+      19,
       27,
-      27
+      13
     ],
     "Translation": [
-      0,
-      -1.5
+      5,
+      -99
     ]
   },
   "Model": "Items/Armor/oldhead.blockymodel",

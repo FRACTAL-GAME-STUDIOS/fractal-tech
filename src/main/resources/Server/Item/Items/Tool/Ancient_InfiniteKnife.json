@@ -1,0 +1,99 @@
+{
+  "TranslationProperties": {
+    "Name": "server.items.ancientinfiniteknife.name",
+    "Description": "server.items.ancientinfiniteknife.description"
+  },
+  "Categories": [
+    "Items.Weapons"
+  ],
+  "Icon": "Icons/ItemsGenerated/Ancient_InfiniteKnife.png",
+  "IconProperties": {
+    "Scale": 0.6,
+    "Rotation": [
+      321,
+      313,
+      0
+    ],
+    "Translation": [
+      -17,
+      -25
+    ]
+  },
+  "Quality": "Epic",
+  "ItemLevel": 40,
+  "Model": "Items/Tool/ancientinfiniteknife.blockymodel",
+  "Texture": "Items/Tool/ancientinfiniteknife_texture.png",
+  "PlayerAnimationsId": "Throwing_Knife",
+  "Utility": {
+    "Usable": true
+  },
+  "Weapon": {},
+  "Recipe": {
+    "TimeSeconds": 1,
+    "Input": [
+      {
+        "ItemId": "Ingredient_Fabric_Scrap_Shadoweave",
+        "Quantity": 8
+      },
+      {
+        "ItemId": "Ingredient_Bar_Adamantite",
+        "Quantity": 10
+      },
+      {
+        "ItemId": "Ingredient_Bar_Silver",
+        "Quantity": 6
+      },
+      {
+        "ItemId": "Lost_Ingot",
+        "Quantity": 20
+      }
+    ],
+    "OutputQuantity": 1,
+    "BenchRequirement": [
+      {
+        "Type": "Crafting",
+        "Categories": [
+          "Lost_Others"
+        ],
+        "Id": "Bench_LostTechnology"
+      }
+    ]
+  },
+  "Interactions": {
+    "Secondary": {
+      "Interactions": [
+        "Kunai_Throw"
+      ],
+      "Cooldown": {
+        "Cooldown": 0.25,
+        "Charges": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "InterruptRecharge": true,
+        "ClickBypass": false
+      }
+    }
+  },
+  "Tags": {
+    "Type": [
+      "Weapon"
+    ]
+  }
+}

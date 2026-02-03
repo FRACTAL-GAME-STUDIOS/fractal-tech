@@ -11,7 +11,7 @@
         {
           "Type": "ApplyEffect",
           "EffectId": {
-            "Duration": 0,
+            "Duration": 30,
             "StatModifiers": {
               "Stamina": 0
             },
@@ -37,6 +37,41 @@
       ]
     }
   },
+  "Recipe": {
+    "TimeSeconds": 1,
+    "Input": [
+      {
+        "ItemId": "Ingredient_Crystal_Red",
+        "Quantity": 5
+      },
+      {
+        "ItemId": "Ingredient_Crystal_Green",
+        "Quantity": 5
+      },
+      {
+        "ItemId": "Ingredient_Crystal_Blue",
+        "Quantity": 5
+      },
+      {
+        "ItemId": "Ingredient_Bar_Iron",
+        "Quantity": 4
+      },
+      {
+        "ItemId": "Lost_Ingot",
+        "Quantity": 1
+      }
+    ],
+    "OutputQuantity": 1,
+    "BenchRequirement": [
+      {
+        "Type": "Crafting",
+        "Categories": [
+          "Lost_Others"
+        ],
+        "Id": "Bench_LostTechnology"
+      }
+    ]
+  },
   "BlockType": {
     "CustomModel": "Items/Tool/oldgravity.blockymodel",
     "CustomModelTexture": [
@@ -51,5 +86,17 @@
     }
   },
   "MaxStack": 10,
-  "DropOnDeath": true
+  "DropOnDeath": true,
+  "IconProperties": {
+    "Scale": 1,
+    "Rotation": [
+      14,
+      15,
+      0
+    ],
+    "Translation": [
+      0,
+      -13.5
+    ]
+  }
 }

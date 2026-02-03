@@ -8,7 +8,7 @@
   "ItemLevel": 15,
   "Icon": "Icons/ItemsGenerated/Lost_Chest.png",
   "IconProperties": {
-    "Scale": 0.4,
+    "Scale": 0.5,
     "Rotation": [
       19,
       34,
@@ -16,7 +16,7 @@
     ],
     "Translation": [
       -2,
-      -23
+      -68
     ]
   },
   "Model": "Items/Armor/lostchest.blockymodel",

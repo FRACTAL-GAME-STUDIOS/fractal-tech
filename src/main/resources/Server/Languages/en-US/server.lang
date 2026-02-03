@@ -61,5 +61,20 @@ items.lostingot.name = Lost Technology ingot
 items.lostore.name = Lost Technology ore
 items.lostore.description = Lost Technology ore. Must be refined.
 
-items.ancientescape.description = Ancient Technology Escape button. You will be teleported in a random place.
+items.ancientescape.description =  You will be teleported in a random place.
 items.ancientescape.name = Ancient Technology Escape Button
+
+items.lostinfiniteknife.name = Lost Technology Infinite Knife
+items.lostinfiniteknife.description = Left hand throwing knife. You can shoot 6 times before wait to reload.
+
+items.oldinfiniteknife.name = Very old Technology Infinite Knife
+items.oldinfiniteknife.description = Left hand throwing knife. You can shoot 12 times before wait to reload.
+
+items.ancientinfiniteknife.name = Ancient Technology Infinite Knife
+items.ancientinfiniteknife.description = Left hand throwing knife. You can shoot 18 times before wait to reload.
+
+items.oldbone.name = Old Technology Bone energizer
+
+items.lostrecipe.name = Lost Technology food
+
+items.ancientrecipe.name = Ancient Technology food

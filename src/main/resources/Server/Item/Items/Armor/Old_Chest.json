@@ -8,15 +8,15 @@
   "ItemLevel": 35,
   "Icon": "Icons/ItemsGenerated/Old_Chest.png",
   "IconProperties": {
-    "Scale": 0.4,
+    "Scale": 0.5,
     "Rotation": [
-      22.5,
-      42,
-      22.5
+      19,
+      34,
+      10
     ],
     "Translation": [
-      0.3,
-      -9
+      -2,
+      -68
     ]
   },
   "Model": "Items/Armor/oldchest.blockymodel",

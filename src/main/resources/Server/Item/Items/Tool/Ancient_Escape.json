@@ -37,6 +37,37 @@
       ]
     }
   },
+  "Recipe": {
+    "TimeSeconds": 1,
+    "Input": [
+      {
+        "ItemId": "Ingredient_Feathers_Red",
+        "Quantity": 3
+      },
+      {
+        "ItemId": "Ingredient_Feathers_Light",
+        "Quantity": 3
+      },
+      {
+        "ItemId": "Ingredient_Bar_Thorium",
+        "Quantity": 4
+      },
+      {
+        "ItemId": "Lost_Ingot",
+        "Quantity": 1
+      }
+    ],
+    "OutputQuantity": 1,
+    "BenchRequirement": [
+      {
+        "Type": "Crafting",
+        "Categories": [
+          "Lost_Others"
+        ],
+        "Id": "Bench_LostTechnology"
+      }
+    ]
+  },
   "BlockType": {
     "CustomModel": "Items/Tool/ancientescape.blockymodel",
     "CustomModelTexture": [

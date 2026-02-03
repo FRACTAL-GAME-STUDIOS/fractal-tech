@@ -10,13 +10,13 @@
   "IconProperties": {
     "Scale": 0.645,
     "Rotation": [
-      21.94,
-      68,
-      19
+      0,
+      123,
+      18
     ],
     "Translation": [
-      4,
-      -1
+      -6,
+      -52
     ]
   },
   "Model": "Items/Armor/oldhands.blockymodel",

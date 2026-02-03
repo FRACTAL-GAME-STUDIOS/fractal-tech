@@ -22,7 +22,7 @@
     "TimeSeconds": 4
   },
   "Icon": "Icons/ItemsGenerated/Lost_Ore.png",
-  "Model": "Items/Blocks/lostore.blockymodel",
+  "Model": "Items/Blocks/lostores.blockymodel",
   "Texture": "Items/Blocks/lostore_texture.png",
   "ItemLevel": 10,
   "PlayerAnimationsId": "Block",
